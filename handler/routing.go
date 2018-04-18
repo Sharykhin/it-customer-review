@@ -10,6 +10,10 @@ import (
 // Handler is a main router for this service
 func Handler() http.Handler {
 	r := mux.NewRouter()
-	r.Handle("/ping", middleware.Chain(middleware.Chain(http.HandlerFunc(pong), middleware.PanicRecover))).Methods("GET")
+	r.Handle("/ping", middleware.Chain(
+		middleware.Chain(http.HandlerFunc(pong),
+			middleware.PanicRecover,
+			middleware.CORS,
+		))).Methods("GET")
 	return r
 }
