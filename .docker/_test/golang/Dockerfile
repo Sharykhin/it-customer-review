@@ -1,8 +1,8 @@
 FROM golang:1.9
 
-ADD . /go/src/tests
+ADD . /go/src/github.com/Sharykhin/it-customer-review
 
-WORKDIR /go/src/tests
+WORKDIR /go/src/github.com/Sharykhin/it-customer-review
 
 RUN go get . && \
     go get github.com/mattes/migrate && \
