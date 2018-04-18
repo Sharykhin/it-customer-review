@@ -67,32 +67,3 @@ func (s storage) Create(ctx context.Context, r *entity.Review) (*entity.Review, 
 
 	return r, nil
 }
-
-//func (s storage) Get(ctx context.Context, limit, offset int) ([]entity.Todo, error) {
-//	rows, err := db.QueryContext(ctx, "SELECT id, title, description, completed, created FROM todos LIMIT ? OFFSET ?", limit, offset)
-//	if err != nil {
-//		return nil, fmt.Errorf("could not make select statement: %v", err)
-//	}
-//	defer rows.Close()
-//
-//	var todos []entity.Todo
-//	for rows.Next() {
-//		var todo entity.Todo
-//		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Completed, &todo.Created)
-//		if err != nil {
-//			return nil, fmt.Errorf("error in scanning row to todo struct: %v", err)
-//		}
-//		todos = append(todos, todo)
-//	}
-//	return todos, rows.Err()
-//}
-//
-//func (s storage) Count(ctx context.Context) (int, error) {
-//	var count int
-//	row := db.QueryRowContext(ctx, "SELECT COUNT(id) AS `total` FROM todos")
-//	err := row.Scan(&count)
-//	if err != nil {
-//		return 0, fmt.Errorf("could not make scan: %v", err)
-//	}
-//	return count, nil
-//}
