@@ -17,5 +17,5 @@ lint:
 	docker-compose exec cr-golang-api gometalinter.v2 ./...
 
 serve:
-	HTTP_ADDRESS=":8000" go run *.go
+	HTTP_ADDRESS=":8000" CORS_ORIGIN="*" go run *.go
 

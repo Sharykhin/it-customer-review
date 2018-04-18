@@ -1,7 +1,5 @@
 FROM golang:1.9
 
-ENV APP_ENV dev
-
 ADD . /go/src/github.com/Sharykhin/it-customer-review
 
 WORKDIR /go/src/github.com/Sharykhin/it-customer-review
