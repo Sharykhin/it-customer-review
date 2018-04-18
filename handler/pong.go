@@ -1,15 +1,20 @@
 package handler
 
 import (
-	"fmt"
+	"log"
 	"net/http"
+
+	"github.com/Sharykhin/it-customer-review/util"
 )
 
 func pong(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "text/plain")
-	n, err := w.Write([]byte("pong"))
+	err := util.JSON(util.Response{
+		Success: true,
+		Data:    "pong",
+		Error:   util.ErrorField{Err: nil},
+		Meta:    nil,
+	}, w, http.StatusOK)
 	if err != nil {
-		fmt.Printf("Could not sent a response: %v, %d", err, n)
+		log.Printf("could not return response, struct: %v, error: %v", r, err)
 	}
 }
