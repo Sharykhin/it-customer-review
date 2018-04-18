@@ -6,7 +6,7 @@ services:
 - docker
 install:
 - docker build -t test-golang . --file=.docker/_test/golang/Dockerfile
-- docker build -t test-mysql . --file=.docker/_test/mysql/Dockerfile
+- docker build -t test-mysql  . --file=.docker/_test/mysql/Dockerfile
 script:
 - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./.deployment/travis/script-test; fi
 deploy:
