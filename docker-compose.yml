@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  cr-golang:
+  cr-golang-api:
     container_name: cr-golang-api
     image: cr-golang-api
     build:
@@ -12,13 +12,13 @@ services:
     volumes:
       - .:/go/src/github.com/Sharykhin/it-customer-review
     links:
-      - cr-mysql
+      - cr-mysql-api
     depends_on:
-      - cr-mysql
+      - cr-mysql-api
     ports:
       - 8080:8080
 
-  cr-mysql:
+  cr-mysql-api:
     container_name: cr-mysql-api
     image: cr-mysql-api
     build:
