@@ -26,7 +26,7 @@ func (ef ErrorField) MarshalJSON() ([]byte, error) {
 	return json.Marshal(nil)
 }
 
-// JSON send json response to a client
+// JSON sends a json response to a client
 func JSON(r Response, w http.ResponseWriter, status int) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
