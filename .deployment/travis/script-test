@@ -3,6 +3,8 @@
 docker network create test
 
 docker run --rm --name test-mysql  --net test -e MYSQL_ROOT_PASSWORD=root -e MYSQL_USER=test -e MYSQL_PASSWORD=test -e MYSQL_DATABASE=test -d -t test-mysql
+#This is temporary fix. We need to move to a docker-compose
+sleep 10
 docker run --rm --name test-golang --net test -e DB_USER=test -e DB_PASS=test -e DB_HOST=test-mysql -e DB_NAME=test -d -t test-golang
 
 docker exec test-golang gometalinter.v2 ./...
