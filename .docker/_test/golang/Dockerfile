@@ -4,11 +4,6 @@ ADD . /go/src/tests
 
 WORKDIR /go/src/tests
 
-ENV DB_USER test
-ENV DB_PASS test
-ENV DB_HOST mysql
-ENV DB_NAME test
-
 RUN go get . && \
     go get github.com/mattes/migrate && \
     go get -u gopkg.in/alecthomas/gometalinter.v2 && \
