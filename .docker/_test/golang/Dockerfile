@@ -1,6 +1,6 @@
 FROM golang:1.9
 
-ADD ../ /go/src/tests
+ADD ../../ /go/src/tests
 
 WORKDIR /go/src/tests
 
