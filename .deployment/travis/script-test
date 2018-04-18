@@ -1,0 +1,15 @@
+#!/bin/bash
+
+docker network create test
+docker run --rm --name golang --net test -d -t test-golang
+docker run --rm --name mysql --net test -e MYSQL_ROOT_PASSWORD=root -e MYSQL_USER=test -e MYSQL_PASSWORD=test -e MYSQL_DATABASE=test  -d -t test-mysql
+docker exec golang gometalinter.v2 ./...
+docker exec golang ./migrate.linux-amd64 -database "mysql://test:test@tcp(mysql:3306)/test" -path migrations up
+docker exec golang ./migrate.linux-amd64 -database "mysql://test:test@tcp(mysql:3306)/test" -path migrations down
+docker exec golang ./migrate.linux-amd64 -database "mysql://test:test@tcp(mysql:3306)/test" -path migrations up
+docker exec golang ./migrate.linux-amd64 -database "mysql://test:test@tcp(mysql:3306)/test" -path migrations drop
+docker exec golang ./migrate.linux-amd64 -database "mysql://test:test@tcp(mysql:3306)/test" -path migrations up
+docker exec golang ./migrate.linux-amd64 -database "mysql://test:test@tcp(mysql:3306)/test" -path migrations version
+docker stop golang
+docker stop mysql
+docker network rm test

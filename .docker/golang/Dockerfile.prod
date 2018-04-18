@@ -1,0 +1,18 @@
+FROM golang:1.9
+
+ENV APP_ENV prod
+ENV MYSQL_ADDRESS "test:test@tcp(localhost:3306)/test?parseTime=true"
+
+ADD . /go/src/github.com/golang/example/outyet
+
+WORKDIR /go/src/github.com/golang/example/outyet
+
+RUN go get . && \
+    go get github.com/mattes/migrate && \
+    go get gopkg.in/testfixtures.v2 && \
+    go install github.com/golang/example/outyet && \
+    go get -u github.com/pressly/goose/cmd/goose
+
+EXPOSE 8080
+
+ENTRYPOINT /go/bin/outyet

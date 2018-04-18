@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  cr-golang:
+    container_name: cr-golang-api
+    image: cr-golang-api
+    build:
+      context: .
+      dockerfile: .docker/golang/Dockerfile.dev
+    env_file:
+      - ./.docker/golang/.env
+    volumes:
+      - .:/go/src/github.com/Sharykhin/it-customer-review
+    links:
+      - cr-mysql
+    depends_on:
+      - cr-mysql
+    ports:
+      - 8080:8080
+
+  cr-mysql:
+    container_name: cr-mysql-api
+    image: cr-mysql-api
+    build:
+      context: .
+      dockerfile: .docker/mysql/Dockerfile
+    env_file:
+      - ./.docker/mysql/.env
