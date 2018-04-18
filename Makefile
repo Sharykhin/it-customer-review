@@ -1,5 +1,5 @@
 #!make
-.PHONY: test migrate-up migrate-down
+.PHONY: test migrate-up migrate-down serve
 
 include .docker/golang/.env
 export $(shell sed 's/=.*//' .docker/golang/.env)
@@ -15,4 +15,7 @@ migrate-down:
 
 lint:
 	docker-compose exec cr-golang-api gometalinter.v2 ./...
+
+serve:
+	HTTP_ADDRESS=":8000" go run *.go
 
