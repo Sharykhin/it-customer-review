@@ -2,6 +2,7 @@ package util
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -27,8 +28,27 @@ func (ef ErrorField) MarshalJSON() ([]byte, error) {
 }
 
 // JSON sends a json response to a client
-func JSON(r Response, w http.ResponseWriter, status int) error {
+func JSON(r Response, w http.ResponseWriter, status int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	return json.NewEncoder(w).Encode(r)
+	err := json.NewEncoder(w).Encode(r)
+	if err != nil {
+		log.Fatalf("could not sent a response to a client, error: %v. Struct: %v", err, r)
+	}
+}
+
+// JSONBadRequest is a helper func that returns 400 (bad request) response
+func JSONBadRequest(err error, w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
+	r := Response{
+		Success: false,
+		Data:    nil,
+		Error:   ErrorField{Err: err},
+		Meta:    nil,
+	}
+	w.WriteHeader(http.StatusBadRequest)
+	err = json.NewEncoder(w).Encode(r)
+	if err != nil {
+		log.Fatalf("could not sent a response to a client, error: %v. Struct: %v", err, r)
+	}
 }

@@ -15,5 +15,11 @@ func Handler() http.Handler {
 			middleware.PanicRecover,
 			middleware.CORS,
 		))).Methods("GET")
+
+	r.Handle("/reviews", middleware.Chain(
+		middleware.Chain(http.HandlerFunc(create),
+			middleware.PanicRecover,
+			middleware.CORS,
+		))).Methods("POST")
 	return r
 }
