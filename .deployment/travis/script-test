@@ -8,12 +8,12 @@ sleep 10
 docker run --rm --name test-golang --net test -e DB_USER=test -e DB_PASS=test -e DB_HOST=test-mysql -e DB_NAME=test -d -t test-golang
 
 docker exec test-golang gometalinter.v2 ./...
-docker exec test-golang ./migrate.linux-amd64 -database "mysql://test:test@tcp(test-mysql:3306)/test" -path migrations up
-docker exec test-golang ./migrate.linux-amd64 -database "mysql://test:test@tcp(test-mysql:3306)/test" -path migrations down
-docker exec test-golang ./migrate.linux-amd64 -database "mysql://test:test@tcp(test-mysql:3306)/test" -path migrations up
-docker exec test-golang ./migrate.linux-amd64 -database "mysql://test:test@tcp(test-mysql:3306)/test" -path migrations drop
-docker exec test-golang ./migrate.linux-amd64 -database "mysql://test:test@tcp(test-mysql:3306)/test" -path migrations up
-docker exec test-golang ./migrate.linux-amd64 -database "mysql://test:test@tcp(test-mysql:3306)/test" -path migrations version
+docker exec test-golang ./migrate.linux-amd64 -database "mysql://test:test@tcp(test-mysql:3306)/test" -path migration up
+docker exec test-golang ./migrate.linux-amd64 -database "mysql://test:test@tcp(test-mysql:3306)/test" -path migration down
+docker exec test-golang ./migrate.linux-amd64 -database "mysql://test:test@tcp(test-mysql:3306)/test" -path migration up
+docker exec test-golang ./migrate.linux-amd64 -database "mysql://test:test@tcp(test-mysql:3306)/test" -path migration drop
+docker exec test-golang ./migrate.linux-amd64 -database "mysql://test:test@tcp(test-mysql:3306)/test" -path migration up
+docker exec test-golang ./migrate.linux-amd64 -database "mysql://test:test@tcp(test-mysql:3306)/test" -path migration version
 docker stop test-golang
 docker stop test-mysql
 docker network rm test
