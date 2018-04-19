@@ -40,10 +40,10 @@ func create(w http.ResponseWriter, r *http.Request) {
 		}, w, http.StatusInternalServerError)
 		return
 	}
-	rs := entity.ReviewResponse{ReviewResponse: review}
+
 	util.JSON(util.Response{
 		Success: true,
-		Data:    rs,
+		Data:    review,
 		Error:   util.ErrorField{Err: nil},
 		Meta:    nil,
 	}, w, http.StatusCreated)

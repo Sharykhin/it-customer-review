@@ -3,8 +3,6 @@ package handler
 import (
 	"context"
 
-	"time"
-
 	"fmt"
 
 	pb "github.com/Sharykhin/it-customer-review/grpc-proto"
@@ -20,10 +18,12 @@ type server struct {
 func (s server) Create(ctx context.Context, request *pb.ReviewRequest) (*pb.ReviewResponse, error) {
 
 	r := entity.NewReview()
-	r.Name = request.Name
-	r.Email = request.Email
-	r.Content = request.Content
-	r.Published = request.Published
+	r.ReviewRequest = request
+	r.Score = entity.Score(request.Score)
+
+	if err := r.Validate(); err != nil {
+		return nil, err
+	}
 
 	r, err := s.storage.Create(ctx, r)
 	if err != nil {
@@ -42,14 +42,14 @@ func (s server) Ping(ctx context.Context, in *pb.Empty) (*pb.Pong, error) {
 }
 
 func (s server) Update(ctx context.Context, request *pb.ReviewRequest) (*pb.ReviewResponse, error) {
-	review := new(pb.ReviewResponse)
-	review.ID = "asd"
-	review.Name = request.Name
-	review.Email = request.Email
-	review.Content = request.Content
-	review.Published = request.Published
-	review.Score = request.Score
-	review.Category = request.Category
-	review.CreatedAt = time.Now().UTC().Format("2006-01-02T15:04:05")
-	return review, nil
+	//review := new(pb.ReviewResponse)
+	//review.ID = "asd"
+	//review.Name = request.Name
+	//review.Email = request.Email
+	//review.Content = request.Content
+	//review.Published = request.Published
+	//review.Score = int64(request.Score)
+	//review.Category = request.Category
+	//review.CreatedAt = time.Now().UTC().Format("2006-01-02T15:04:05")
+	return nil, nil
 }

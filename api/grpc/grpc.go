@@ -5,6 +5,9 @@ import (
 	"log"
 	"os"
 
+	"fmt"
+
+	"github.com/Sharykhin/it-customer-review/api/contract"
 	"github.com/Sharykhin/it-customer-review/api/entity"
 	pb "github.com/Sharykhin/it-customer-review/grpc-proto"
 	"google.golang.org/grpc"
@@ -17,21 +20,31 @@ type (
 )
 
 // ReviewService is a grpc service that would be responsible for managing reviews.
-var ReviewService reviewService
+var ReviewService contract.ServiceProvider
 
-func (ctrl reviewService) Create(ctx context.Context, rr entity.ReviewRequest) (*pb.ReviewResponse, error) {
+func (ctrl reviewService) Create(ctx context.Context, rr entity.ReviewRequest) (*entity.Review, error) {
 
-	response, err := ctrl.client.Create(ctx, &pb.ReviewRequest{
+	r, err := ctrl.client.Create(ctx, &pb.ReviewRequest{
 		Name:    rr.Name,
 		Email:   rr.Email,
 		Content: rr.Content,
+		Score:   -1,
 	})
 
 	if err != nil {
 		return nil, err
 	}
-
-	return response, nil
+	fmt.Println(r)
+	return &entity.Review{
+		ID:        r.ID,
+		Name:      r.Name,
+		Email:     r.Email,
+		Content:   r.Content,
+		Published: r.Published,
+		Score:     entity.Score(r.Score),
+		Category:  entity.NullString(r.Category),
+		CreatedAt: r.CreatedAt,
+	}, nil
 }
 
 func init() {

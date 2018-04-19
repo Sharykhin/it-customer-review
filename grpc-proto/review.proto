@@ -24,7 +24,7 @@ message ReviewRequest {
     string Email = 3;
     string Content = 4;
     bool Published = 5;
-    uint64 Score = 6;
+    int64 Score = 6;
     string Category = 7;
 }
 
@@ -35,7 +35,7 @@ message ReviewResponse {
     string Email = 3;
     string Content = 4;
     bool Published = 5;
-    uint64 Score = 6;
+    int64 Score = 6;
     string Category = 7;
     string CreatedAt = 8;
 }

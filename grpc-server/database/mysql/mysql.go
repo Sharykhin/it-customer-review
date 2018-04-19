@@ -54,15 +54,13 @@ func (s storage) Create(ctx context.Context, r *entity.Review) (*entity.Review, 
 		r.Content,
 		r.Published,
 		r.Score,
-		nil,
+		r.Category,
 	)
 
 	if err != nil {
 		log.Printf("could not make insert statement: %v", err)
 		return nil, fmt.Errorf("could not make insert statement: %v", err)
 	}
-
 	r.CreatedAt = entity.JSONTime(time.Now())
-
 	return r, nil
 }

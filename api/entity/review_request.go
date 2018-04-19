@@ -21,7 +21,10 @@ type ReviewRequest struct {
 // Validate validates the current struct
 func (rr ReviewRequest) Validate() error {
 
-	var trimmedName, trimmedEmail, trimmedContent = strings.Trim(rr.Name, " "), strings.Trim(rr.Email, " "), strings.Trim(rr.Content, " ")
+	var trimmedName = strings.Trim(rr.Name, " ")
+	var trimmedEmail = strings.Trim(rr.Email, " ")
+	var trimmedContent = strings.Trim(rr.Content, " ")
+
 	if trimmedName == "" {
 		return errors.New("name is required")
 	}

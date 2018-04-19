@@ -9,6 +9,6 @@ import (
 type (
 	// StorageProvider is an interface that describe method for some sort of data storage
 	StorageProvider interface {
-		Create(ctx context.Context, r *entity.Review) (*entity.Review, error)
+		Create(ctx context.Context, vr *entity.Review) (*entity.Review, error)
 	}
 )

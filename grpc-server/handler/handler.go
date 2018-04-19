@@ -23,7 +23,6 @@ func ListenAndServe() error {
 
 	s := grpc.NewServer()
 	pb.RegisterReviewServer(s, &server{storage: mysql.Storage})
-	s.Serve(lis)
 
 	fmt.Printf("Start listening on %s\n", address)
 	return s.Serve(lis)
