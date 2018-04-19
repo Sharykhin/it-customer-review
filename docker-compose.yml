@@ -39,3 +39,30 @@ services:
       dockerfile: grpc-server/.docker/mysql/Dockerfile
     env_file:
       - grpc-server/.docker/mysql/.env
+
+  cr-golang-queue-manager:
+    container_name: cr-golang-queue-manager
+    image: cr-golang-queue-manager
+    links:
+      - cr-rabbitmq-queue-manager
+    volumes:
+      - .:/go/src/github.com/Sharykhin/it-customer-review
+    build:
+      context: .
+      dockerfile: queue-manager/.docker/golang/Dockerfile.dev
+    env_file:
+      - queue-manager/.docker/golang/.env
+    depends_on:
+      - cr-rabbitmq-queue-manager
+
+  cr-rabbitmq-queue-manager:
+    container_name: cr-rabbitmq-queue-manager
+    image: cr-rabbitmq-queue-manager
+    build:
+      context: .
+      dockerfile: queue-manager/.docker/rabbitmq/Dockerfile.dev
+    ports:
+      - 5672:5672
+      - 15672:15672
+    env_file:
+      - queue-manager/.docker/rabbitmq/.env
