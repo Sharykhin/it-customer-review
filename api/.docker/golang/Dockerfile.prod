@@ -5,14 +5,11 @@ ENV MYSQL_ADDRESS "test:test@tcp(localhost:3306)/test?parseTime=true"
 
 ADD . /go/src/github.com/Sharykhin/it-customer-review
 
-WORKDIR /go/src/github.com/Sharykhin/it-customer-review
+WORKDIR /go/src/github.com/Sharykhin/it-customer-review/api
 
 RUN go get . && \
-    go get github.com/mattes/migrate && \
-    go get gopkg.in/testfixtures.v2 && \
-    go install github.com/Sharykhin/it-customer-review && \
-    go get -u github.com/pressly/goose/cmd/goose
+    go build -o /go/bin/it-customer-review-api .
 
 EXPOSE 8080
 
-ENTRYPOINT /go/bin/it-customer-review
+ENTRYPOINT /go/bin/it-customer-review-api
