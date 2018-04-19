@@ -1,0 +1,15 @@
+FROM golang:1.9
+
+ENV APP_ENV prod
+ENV MYSQL_ADDRESS "test:test@tcp(localhost:3306)/test?parseTime=true"
+
+ADD . /go/src/github.com/Sharykhin/it-customer-review
+
+WORKDIR /go/src/github.com/Sharykhin/it-customer-review/api
+
+RUN go get . && \
+    go build -o /go/bin/it-customer-review-api .
+
+EXPOSE 8080
+
+ENTRYPOINT /go/bin/it-customer-review-api

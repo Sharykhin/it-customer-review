@@ -6,23 +6,36 @@ services:
     image: cr-golang-api
     build:
       context: .
-      dockerfile: .docker/golang/Dockerfile.dev
+      dockerfile: api/.docker/golang/Dockerfile.dev
     env_file:
-      - ./.docker/golang/.env
+      - api/.docker/golang/.env
     volumes:
       - .:/go/src/github.com/Sharykhin/it-customer-review
-    links:
-      - cr-mysql-api
-    depends_on:
-      - cr-mysql-api
     ports:
       - 8080:8080
 
-  cr-mysql-api:
+  cr-golang-grpc-server:
+    container_name: cr-golang-grpc-server
+    image: cr-golang-grpc-server
+    build:
+      context: .
+      dockerfile: grpc-server/.docker/golang/Dockerfile.dev
+    env_file:
+      - grpc-server/.docker/golang/.env
+    volumes:
+      - .:/go/src/github.com/Sharykhin/it-customer-review
+    links:
+      - cr-mysql-grpc-server-api
+    depends_on:
+      - cr-mysql-grpc-server-api
+    ports:
+      - 50051:50051
+
+  cr-mysql-grpc-server-api:
     container_name: cr-mysql-api
     image: cr-mysql-api
     build:
       context: .
-      dockerfile: .docker/mysql/Dockerfile
+      dockerfile: grpc-server/.docker/mysql/Dockerfile
     env_file:
-      - ./.docker/mysql/.env
+      - grpc-server/.docker/mysql/.env
