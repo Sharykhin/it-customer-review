@@ -10,7 +10,6 @@ service Review {
 
 // Request message for creating a new fail mail
 message ReviewRequest {
-    string ID = 1;
     string Name = 2;
     string Email = 3;
     string Content = 4;

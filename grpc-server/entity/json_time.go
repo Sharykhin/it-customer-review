@@ -22,3 +22,7 @@ func (t JSONTime) MarshalJSON() ([]byte, error) {
 func (t JSONTime) IsZero() bool {
 	return time.Time(t).IsZero()
 }
+
+func (t JSONTime) String() string {
+	return time.Time(t).UTC().Format(jsonTimeFormat)
+}

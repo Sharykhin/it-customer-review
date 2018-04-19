@@ -32,8 +32,8 @@ services:
       - 50051:50051
 
   cr-mysql-grpc-server-api:
-    container_name: cr-mysql-api
-    image: cr-mysql-api
+    container_name: cr-mysql-grpc-server-api
+    image: cr-mysql-grpc-server-api
     build:
       context: .
       dockerfile: grpc-server/.docker/mysql/Dockerfile

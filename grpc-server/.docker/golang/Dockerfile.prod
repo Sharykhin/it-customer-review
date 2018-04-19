@@ -8,6 +8,7 @@ ADD . /go/src/github.com/Sharykhin/it-customer-review
 WORKDIR /go/src/github.com/Sharykhin/it-customer-review/grpc-server
 
 RUN go get . && \
+    go get github.com/go-sql-driver/mysql && \
     go build -o /go/bin/it-customer-review-grpc-server .
 
 EXPOSE 50051

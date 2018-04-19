@@ -20,7 +20,6 @@ func main() {
 	client := pb.NewReviewClient(conn)
 
 	review, err := client.Create(context.Background(), &pb.ReviewRequest{
-		ID:        "12312",
 		Name:      "asdas",
 		Email:     "asdas",
 		Content:   "asdasd",
@@ -34,7 +33,6 @@ func main() {
 	fmt.Println(review)
 
 	updatedReview, err := client.Update(context.Background(), &pb.ReviewRequest{
-		ID:        "12312",
 		Name:      "asdas",
 		Email:     "asdas",
 		Content:   "asdasd",

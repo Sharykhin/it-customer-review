@@ -1,6 +1,6 @@
 package entity
 
-import "github.com/Sharykhin/it-customer-review/api/util"
+import "github.com/Sharykhin/it-customer-review/grpc-server/util"
 
 // Review is a basic entity that represent user's review
 type Review struct {
@@ -12,7 +12,6 @@ type Review struct {
 	Score     uint64   `json:"score"`
 	Category  string   `json:"category"`
 	CreatedAt JSONTime `json:"created_at"`
-	Creator   string   `json:"creator"`
 }
 
 // NewReview returns a new instance of Review entity with filled some properties
@@ -21,13 +20,8 @@ func NewReview() *Review {
 	if err != nil {
 		panic("could not generate uuid")
 	}
-	randStr, err := util.GenerateRandomString(80)
-	if err != nil {
-		panic("could not generate random string")
-	}
 	return &Review{
-		ID:       uuid,
-		Creator:  randStr,
-		Category: "positive",
+		ID:        uuid,
+		Published: false,
 	}
 }
