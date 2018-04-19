@@ -6,6 +6,16 @@ service Review {
     rpc Create (ReviewRequest) returns (ReviewResponse) {}
 
     rpc Update(ReviewRequest) returns(ReviewResponse) {}
+
+    rpc Ping(Empty) returns(Pong) {}
+}
+
+message Empty {
+
+}
+
+message Pong {
+    string response = 1;
 }
 
 // Request message for creating a new fail mail

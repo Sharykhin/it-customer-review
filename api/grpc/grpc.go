@@ -40,5 +40,9 @@ func init() {
 		log.Fatalf("Could not connet to a grpc server: %v", err)
 	}
 	client := pb.NewReviewClient(conn)
+
+	if _, err := client.Ping(context.Background(), &pb.Empty{}); err != nil {
+		log.Fatalf("Could not ping a grpc server: %v", err)
+	}
 	ReviewService = reviewService{client: client}
 }

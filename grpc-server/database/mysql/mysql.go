@@ -47,14 +47,14 @@ func init() {
 func (s storage) Create(ctx context.Context, r *entity.Review) (*entity.Review, error) {
 	_, err := s.db.ExecContext(
 		ctx,
-		"INSERT INTO reviews(`id`, `name`, `email`, `content`, `published`, `score`, `category`, `created_at`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())",
+		"INSERT INTO reviews(`id`, `name`, `email`, `content`, `published`, `score`, `category`, `created_at`) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())",
 		r.ID,
 		r.Name,
 		r.Email,
 		r.Content,
 		r.Published,
 		r.Score,
-		r.Category,
+		nil,
 	)
 
 	if err != nil {

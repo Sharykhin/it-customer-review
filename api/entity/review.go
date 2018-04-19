@@ -15,7 +15,7 @@ type Review struct {
 	Published bool       `json:"published"`
 	Score     uint64     `json:"score"`
 	Category  NullString `json:"category"`
-	CreatedAt JSONTime   `json:"created_at"`
+	CreatedAt string     `json:"created_at"`
 }
 
 type NullString string
