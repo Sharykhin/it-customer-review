@@ -1,1 +1,0 @@
-ALTER TABLE `reviews` ADD COLUMN `creator` VARCHAR(255) NOT NULL AFTER `category`;
