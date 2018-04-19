@@ -5,6 +5,7 @@ ADD . /go/src/github.com/Sharykhin/it-customer-review
 WORKDIR /go/src/github.com/Sharykhin/it-customer-review/grpc-server
 
 RUN go get . && \
+    go get github.com/go-sql-driver/mysql && \
     go get github.com/canthefason/go-watcher && \
     go get github.com/mattes/migrate && \
     go install github.com/canthefason/go-watcher/cmd/watcher && \

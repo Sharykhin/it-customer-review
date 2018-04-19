@@ -9,7 +9,7 @@ import (
 
 	"time"
 
-	"github.com/Sharykhin/it-customer-review/api/entity"
+	"github.com/Sharykhin/it-customer-review/grpc-server/entity"
 	_ "github.com/go-sql-driver/mysql" // dependency of mysql
 )
 
@@ -47,7 +47,7 @@ func init() {
 func (s storage) Create(ctx context.Context, r *entity.Review) (*entity.Review, error) {
 	_, err := s.db.ExecContext(
 		ctx,
-		"INSERT INTO reviews(`id`, `name`, `email`, `content`, `published`, `score`, `category`, `creator`, `created_at`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())",
+		"INSERT INTO reviews(`id`, `name`, `email`, `content`, `published`, `score`, `category`, `created_at`) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())",
 		r.ID,
 		r.Name,
 		r.Email,
@@ -55,15 +55,12 @@ func (s storage) Create(ctx context.Context, r *entity.Review) (*entity.Review, 
 		r.Published,
 		r.Score,
 		r.Category,
-		r.Creator,
 	)
 
 	if err != nil {
 		log.Printf("could not make insert statement: %v", err)
 		return nil, fmt.Errorf("could not make insert statement: %v", err)
 	}
-
 	r.CreatedAt = entity.JSONTime(time.Now())
-
 	return r, nil
 }

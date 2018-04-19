@@ -5,8 +5,10 @@ import (
 
 	"encoding/json"
 
-	"github.com/Sharykhin/it-customer-review/api/controller"
+	"log"
+
 	"github.com/Sharykhin/it-customer-review/api/entity"
+	"github.com/Sharykhin/it-customer-review/api/grpc"
 	"github.com/Sharykhin/it-customer-review/api/util"
 	"github.com/pkg/errors"
 )
@@ -26,9 +28,10 @@ func create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	review, err := controller.ReviewCtrl.Create(r.Context(), rr)
+	review, err := grpc.ReviewService.Create(r.Context(), rr)
 
 	if err != nil {
+		log.Printf("could not create a new review: %v", err)
 		util.JSON(util.Response{
 			Success: false,
 			Data:    nil,

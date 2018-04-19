@@ -7,8 +7,8 @@ import (
 )
 
 type (
-	// StorageProvider is an interface that describe method for some sort of data storage
-	StorageProvider interface {
+	// ServiceProvider is an interface that describe method for some sort of data storage
+	ServiceProvider interface {
 		Create(ctx context.Context, rr entity.ReviewRequest) (*entity.Review, error)
 	}
 )

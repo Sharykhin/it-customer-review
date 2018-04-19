@@ -6,16 +6,25 @@ service Review {
     rpc Create (ReviewRequest) returns (ReviewResponse) {}
 
     rpc Update(ReviewRequest) returns(ReviewResponse) {}
+
+    rpc Ping(Empty) returns(Pong) {}
+}
+
+message Empty {
+
+}
+
+message Pong {
+    string response = 1;
 }
 
 // Request message for creating a new fail mail
 message ReviewRequest {
-    string ID = 1;
     string Name = 2;
     string Email = 3;
     string Content = 4;
     bool Published = 5;
-    uint64 Score = 6;
+    int64 Score = 6;
     string Category = 7;
 }
 
@@ -26,7 +35,7 @@ message ReviewResponse {
     string Email = 3;
     string Content = 4;
     bool Published = 5;
-    uint64 Score = 6;
+    int64 Score = 6;
     string Category = 7;
     string CreatedAt = 8;
 }
