@@ -15,7 +15,7 @@ message Empty {
 }
 
 message Pong {
-    string response = 1;
+    string Response = 1;
 }
 
 // Request message for creating a new fail mail

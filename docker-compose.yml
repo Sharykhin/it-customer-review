@@ -40,29 +40,29 @@ services:
     env_file:
       - grpc-server/.docker/mysql/.env
 
-  cr-golang-queue-manager:
-    container_name: cr-golang-queue-manager
-    image: cr-golang-queue-manager
-    links:
-      - cr-rabbitmq-queue-manager
+  cr-golang-tone-analyzer:
+    container_name: cr-golang-tone-analyzer
+    image: cr-golang-tone-analyzer
     volumes:
       - .:/go/src/github.com/Sharykhin/it-customer-review
     build:
       context: .
-      dockerfile: queue-manager/.docker/golang/Dockerfile.dev
+      dockerfile: tone-analyzer/.docker/golang/Dockerfile.dev
     env_file:
-      - queue-manager/.docker/golang/.env
+      - tone-analyzer/.docker/golang/.env
+    links:
+      - cr-rabbitmq-tone-analyzer
     depends_on:
-      - cr-rabbitmq-queue-manager
+      - cr-rabbitmq-tone-analyzer
 
-  cr-rabbitmq-queue-manager:
-    container_name: cr-rabbitmq-queue-manager
-    image: cr-rabbitmq-queue-manager
+  cr-rabbitmq-tone-analyzer:
+    container_name: cr-rabbitmq-tone-analyzer
+    image: cr-rabbitmq-tone-analyzer
     build:
       context: .
-      dockerfile: queue-manager/.docker/rabbitmq/Dockerfile.dev
+      dockerfile: tone-analyzer/.docker/rabbitmq/Dockerfile.dev
     ports:
       - 5672:5672
       - 15672:15672
     env_file:
-      - queue-manager/.docker/rabbitmq/.env
+      - tone-analyzer/.docker/rabbitmq/.env

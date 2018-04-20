@@ -1,0 +1,13 @@
+FROM golang:1.9
+
+ADD . /go/src/github.com/Sharykhin/it-customer-review
+
+WORKDIR /go/src/github.com/Sharykhin/it-customer-review/tone-analyzer
+
+RUN go get . && \
+    go build -o /go/bin/it-customer-review-tone-analyzer .
+
+EXPOSE 5672
+EXPOSE 15672
+
+ENTRYPOINT /go/bin/it-customer-review-tone-analyzer

@@ -2,13 +2,13 @@ FROM golang:1.9
 
 ADD . /go/src/github.com/Sharykhin/it-customer-review
 
-WORKDIR /go/src/github.com/Sharykhin/it-customer-review/queue-manager
+WORKDIR /go/src/github.com/Sharykhin/it-customer-review/tone-analyzer
 
 RUN go get . && \
     go get github.com/canthefason/go-watcher && \
     go install github.com/canthefason/go-watcher/cmd/watcher && \
     go get -u gopkg.in/alecthomas/gometalinter.v2 && \
-    gometalinter.v2 --install && \
+    gometalinter.v2 --install
 
 EXPOSE 5672
 EXPOSE 15672
