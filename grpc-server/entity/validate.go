@@ -48,7 +48,7 @@ func validateContent(content string) error {
 	return nil
 }
 
-func validateCategort(category string) error {
+func validateCategory(category string) error {
 	var trimmedCategory = strings.Trim(category, " ")
 	if trimmedCategory != "" && (trimmedCategory != "positive" && trimmedCategory != "negative") {
 		return errors.New("category must have one of values: positive or negative")

@@ -1,24 +1,26 @@
 syntax = "proto3";
 package review;
 
-
 service Review {
+    // Create a new review
     rpc Create (ReviewRequest) returns (ReviewResponse) {}
-
-    rpc Update(ReviewRequest) returns(ReviewResponse) {}
-
+    // Update an existing review
+    rpc Update(ReviewUpdateRequest) returns(ReviewResponse) {}
+    // Detect whether server works or not
     rpc Ping(Empty) returns(Pong) {}
 }
 
+// Empty is some sort if missing input parameter
 message Empty {
 
 }
 
+// Pong simple response
 message Pong {
     string Response = 1;
 }
 
-// Request message for creating a new fail mail
+// ReviewRequest message for creating a new review
 message ReviewRequest {
     string Name = 2;
     string Email = 3;
@@ -28,7 +30,21 @@ message ReviewRequest {
     string Category = 7;
 }
 
-// Response of fail mail
+// ReviewUpdateRequest for updating an existing review
+message ReviewUpdateRequest {
+    string ID = 1;
+    string Name = 2;
+    string Email = 3;
+    string Content = 4;
+    int64 Score = 5;
+    string Category = 6;
+    oneof Published {
+        bool published_null = 7;  // always set this to "true" when using
+        bool published_value = 8;
+    }
+}
+
+// Response of a review
 message ReviewResponse {
     string ID = 1;
     string Name = 2;

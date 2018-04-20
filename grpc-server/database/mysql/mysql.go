@@ -9,6 +9,9 @@ import (
 
 	"time"
 
+	"strings"
+
+	pb "github.com/Sharykhin/it-customer-review/grpc-proto"
 	"github.com/Sharykhin/it-customer-review/grpc-server/entity"
 	_ "github.com/go-sql-driver/mysql" // dependency of mysql
 )
@@ -63,4 +66,61 @@ func (s storage) Create(ctx context.Context, r *entity.Review) (*entity.Review, 
 	}
 	r.CreatedAt = entity.JSONTime(time.Now())
 	return r, nil
+}
+
+func (s storage) Update(ctx context.Context, r *pb.ReviewUpdateRequest) (*entity.Review, error) {
+	var general = "UPDATE reviews %s WHERE `id` = ?"
+	var sets []string
+	var replacement []interface{}
+	// TODO: think about validating since we accept request directly
+
+	if r.Name != "" {
+		sets = append(sets, "SET `name`=?")
+		replacement = append(replacement, r.Name)
+	}
+
+	if !r.GetPublishedNull() {
+		sets = append(sets, "SET `published`=?")
+		replacement = append(replacement, r.GetPublishedValue())
+	}
+
+	if r.Email != "" {
+		sets = append(sets, "SET `email`=?")
+		replacement = append(replacement, r.Email)
+	}
+
+	var query = fmt.Sprintf(general, strings.Join(sets, ","))
+	replacement = append(replacement, r.ID)
+
+	_, err := s.db.ExecContext(
+		ctx,
+		query,
+		replacement...,
+	)
+
+	if err != nil {
+		return nil, fmt.Errorf("could not make update statement: %v", err)
+	}
+
+	fmt.Println(query)
+	return nil, nil
+	//_, err := s.db.ExecContext(
+	//	ctx,
+	//	"UPDATE reviews SET `name` = ?, `email` = ?, `content` = ?, `published` = ?, `score` = ?, `category` = ?, `updated_at` = NOW() WHERE `id` = ?",
+	//	r.Name,
+	//	r.Email,
+	//	r.Content,
+	//	r.Published,
+	//	r.Score,
+	//	r.Category,
+	//	r.ID,
+	//)
+
+	// TODO: put UpdatedAt here
+
+	//if err != nil {
+	//	return nil, fmt.Errorf("could not make insert statement: %v", err)
+	//}
+	//
+	//return r, nil
 }

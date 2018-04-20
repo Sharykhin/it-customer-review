@@ -41,7 +41,7 @@ func (s server) Ping(ctx context.Context, in *pb.Empty) (*pb.Pong, error) {
 	return &pb.Pong{Response: "pong"}, nil
 }
 
-func (s server) Update(ctx context.Context, request *pb.ReviewRequest) (*pb.ReviewResponse, error) {
+func (s server) Update(ctx context.Context, request *pb.ReviewUpdateRequest) (*pb.ReviewResponse, error) {
 	//review := new(pb.ReviewResponse)
 	//review.ID = "asd"
 	//review.Name = request.Name

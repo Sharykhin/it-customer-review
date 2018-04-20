@@ -25,6 +25,10 @@ type (
 		Category  sql.NullString
 		Score     Score
 	}
+	// ReviewUpdate represent a private entity that would be used for updating an existing review
+	ReviewUpdate struct {
+		*pb.ReviewUpdateRequest
+	}
 	// Score is a specific type that converts into null in case -1 was provided
 	Score int64
 )
@@ -52,11 +56,44 @@ func NewReview() *Review {
 
 	uuid, err := util.NewUUID()
 	if err != nil {
+		// I intentionally run panic since if an error occurred it meant that something really hard went wrong
 		panic("could not generate uuid")
 	}
 	return &Review{
 		ID: uuid,
 	}
+}
+
+// Validate validates all filled values regarding main review entity
+func (r ReviewUpdate) Validate() error {
+	if r.Name != "" {
+		if err := validateName(r.Name); err != nil {
+			return err
+		}
+	}
+
+	if r.Email != "" {
+		if err := validateEmail(r.Email); err != nil {
+			return err
+		}
+	}
+
+	if r.Content != "" {
+		if err := validateContent(r.Content); err != nil {
+			return err
+		}
+	}
+
+	if r.Category != "" {
+		if err := validateCategory(r.Category); err != nil {
+			return err
+		}
+	}
+
+	if err := validateScore(Score(r.Score)); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Validate fully validates review request
@@ -74,7 +111,7 @@ func (r Review) Validate() error {
 		return err
 	}
 
-	if err := validateCategort(r.Category.String); err != nil {
+	if err := validateCategory(r.Category.String); err != nil {
 		return err
 	}
 

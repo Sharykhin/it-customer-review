@@ -11,6 +11,7 @@ It has these top-level messages:
 	Empty
 	Pong
 	ReviewRequest
+	ReviewUpdateRequest
 	ReviewResponse
 */
 package review
@@ -35,6 +36,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
+// Empty is some sort if missing input parameter
 type Empty struct {
 }
 
@@ -43,6 +45,7 @@ func (m *Empty) String() string            { return proto.CompactTextString(m) }
 func (*Empty) ProtoMessage()               {}
 func (*Empty) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
+// Pong simple response
 type Pong struct {
 	Response string `protobuf:"bytes,1,opt,name=Response" json:"Response,omitempty"`
 }
@@ -59,7 +62,7 @@ func (m *Pong) GetResponse() string {
 	return ""
 }
 
-// Request message for creating a new fail mail
+// ReviewRequest message for creating a new review
 type ReviewRequest struct {
 	Name      string `protobuf:"bytes,2,opt,name=Name" json:"Name,omitempty"`
 	Email     string `protobuf:"bytes,3,opt,name=Email" json:"Email,omitempty"`
@@ -116,7 +119,175 @@ func (m *ReviewRequest) GetCategory() string {
 	return ""
 }
 
-// Response of fail mail
+// ReviewUpdateRequest for updating an existing review
+type ReviewUpdateRequest struct {
+	ID       string `protobuf:"bytes,1,opt,name=ID" json:"ID,omitempty"`
+	Name     string `protobuf:"bytes,2,opt,name=Name" json:"Name,omitempty"`
+	Email    string `protobuf:"bytes,3,opt,name=Email" json:"Email,omitempty"`
+	Content  string `protobuf:"bytes,4,opt,name=Content" json:"Content,omitempty"`
+	Score    int64  `protobuf:"varint,5,opt,name=Score" json:"Score,omitempty"`
+	Category string `protobuf:"bytes,6,opt,name=Category" json:"Category,omitempty"`
+	// Types that are valid to be assigned to Published:
+	//	*ReviewUpdateRequest_PublishedNull
+	//	*ReviewUpdateRequest_PublishedValue
+	Published isReviewUpdateRequest_Published `protobuf_oneof:"Published"`
+}
+
+func (m *ReviewUpdateRequest) Reset()                    { *m = ReviewUpdateRequest{} }
+func (m *ReviewUpdateRequest) String() string            { return proto.CompactTextString(m) }
+func (*ReviewUpdateRequest) ProtoMessage()               {}
+func (*ReviewUpdateRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
+
+type isReviewUpdateRequest_Published interface {
+	isReviewUpdateRequest_Published()
+}
+
+type ReviewUpdateRequest_PublishedNull struct {
+	PublishedNull bool `protobuf:"varint,7,opt,name=published_null,json=publishedNull,oneof"`
+}
+type ReviewUpdateRequest_PublishedValue struct {
+	PublishedValue bool `protobuf:"varint,8,opt,name=published_value,json=publishedValue,oneof"`
+}
+
+func (*ReviewUpdateRequest_PublishedNull) isReviewUpdateRequest_Published()  {}
+func (*ReviewUpdateRequest_PublishedValue) isReviewUpdateRequest_Published() {}
+
+func (m *ReviewUpdateRequest) GetPublished() isReviewUpdateRequest_Published {
+	if m != nil {
+		return m.Published
+	}
+	return nil
+}
+
+func (m *ReviewUpdateRequest) GetID() string {
+	if m != nil {
+		return m.ID
+	}
+	return ""
+}
+
+func (m *ReviewUpdateRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *ReviewUpdateRequest) GetEmail() string {
+	if m != nil {
+		return m.Email
+	}
+	return ""
+}
+
+func (m *ReviewUpdateRequest) GetContent() string {
+	if m != nil {
+		return m.Content
+	}
+	return ""
+}
+
+func (m *ReviewUpdateRequest) GetScore() int64 {
+	if m != nil {
+		return m.Score
+	}
+	return 0
+}
+
+func (m *ReviewUpdateRequest) GetCategory() string {
+	if m != nil {
+		return m.Category
+	}
+	return ""
+}
+
+func (m *ReviewUpdateRequest) GetPublishedNull() bool {
+	if x, ok := m.GetPublished().(*ReviewUpdateRequest_PublishedNull); ok {
+		return x.PublishedNull
+	}
+	return false
+}
+
+func (m *ReviewUpdateRequest) GetPublishedValue() bool {
+	if x, ok := m.GetPublished().(*ReviewUpdateRequest_PublishedValue); ok {
+		return x.PublishedValue
+	}
+	return false
+}
+
+// XXX_OneofFuncs is for the internal use of the proto package.
+func (*ReviewUpdateRequest) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
+	return _ReviewUpdateRequest_OneofMarshaler, _ReviewUpdateRequest_OneofUnmarshaler, _ReviewUpdateRequest_OneofSizer, []interface{}{
+		(*ReviewUpdateRequest_PublishedNull)(nil),
+		(*ReviewUpdateRequest_PublishedValue)(nil),
+	}
+}
+
+func _ReviewUpdateRequest_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
+	m := msg.(*ReviewUpdateRequest)
+	// Published
+	switch x := m.Published.(type) {
+	case *ReviewUpdateRequest_PublishedNull:
+		t := uint64(0)
+		if x.PublishedNull {
+			t = 1
+		}
+		b.EncodeVarint(7<<3 | proto.WireVarint)
+		b.EncodeVarint(t)
+	case *ReviewUpdateRequest_PublishedValue:
+		t := uint64(0)
+		if x.PublishedValue {
+			t = 1
+		}
+		b.EncodeVarint(8<<3 | proto.WireVarint)
+		b.EncodeVarint(t)
+	case nil:
+	default:
+		return fmt.Errorf("ReviewUpdateRequest.Published has unexpected type %T", x)
+	}
+	return nil
+}
+
+func _ReviewUpdateRequest_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
+	m := msg.(*ReviewUpdateRequest)
+	switch tag {
+	case 7: // Published.published_null
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Published = &ReviewUpdateRequest_PublishedNull{x != 0}
+		return true, err
+	case 8: // Published.published_value
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Published = &ReviewUpdateRequest_PublishedValue{x != 0}
+		return true, err
+	default:
+		return false, nil
+	}
+}
+
+func _ReviewUpdateRequest_OneofSizer(msg proto.Message) (n int) {
+	m := msg.(*ReviewUpdateRequest)
+	// Published
+	switch x := m.Published.(type) {
+	case *ReviewUpdateRequest_PublishedNull:
+		n += proto.SizeVarint(7<<3 | proto.WireVarint)
+		n += 1
+	case *ReviewUpdateRequest_PublishedValue:
+		n += proto.SizeVarint(8<<3 | proto.WireVarint)
+		n += 1
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	return n
+}
+
+// Response of a review
 type ReviewResponse struct {
 	ID        string `protobuf:"bytes,1,opt,name=ID" json:"ID,omitempty"`
 	Name      string `protobuf:"bytes,2,opt,name=Name" json:"Name,omitempty"`
@@ -131,7 +302,7 @@ type ReviewResponse struct {
 func (m *ReviewResponse) Reset()                    { *m = ReviewResponse{} }
 func (m *ReviewResponse) String() string            { return proto.CompactTextString(m) }
 func (*ReviewResponse) ProtoMessage()               {}
-func (*ReviewResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
+func (*ReviewResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
 
 func (m *ReviewResponse) GetID() string {
 	if m != nil {
@@ -193,6 +364,7 @@ func init() {
 	proto.RegisterType((*Empty)(nil), "review.Empty")
 	proto.RegisterType((*Pong)(nil), "review.Pong")
 	proto.RegisterType((*ReviewRequest)(nil), "review.ReviewRequest")
+	proto.RegisterType((*ReviewUpdateRequest)(nil), "review.ReviewUpdateRequest")
 	proto.RegisterType((*ReviewResponse)(nil), "review.ReviewResponse")
 }
 
@@ -207,8 +379,11 @@ const _ = grpc.SupportPackageIsVersion4
 // Client API for Review service
 
 type ReviewClient interface {
+	// Create a new review
 	Create(ctx context.Context, in *ReviewRequest, opts ...grpc.CallOption) (*ReviewResponse, error)
-	Update(ctx context.Context, in *ReviewRequest, opts ...grpc.CallOption) (*ReviewResponse, error)
+	// Update an existing review
+	Update(ctx context.Context, in *ReviewUpdateRequest, opts ...grpc.CallOption) (*ReviewResponse, error)
+	// Detect whether server works or not
 	Ping(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Pong, error)
 }
 
@@ -229,7 +404,7 @@ func (c *reviewClient) Create(ctx context.Context, in *ReviewRequest, opts ...gr
 	return out, nil
 }
 
-func (c *reviewClient) Update(ctx context.Context, in *ReviewRequest, opts ...grpc.CallOption) (*ReviewResponse, error) {
+func (c *reviewClient) Update(ctx context.Context, in *ReviewUpdateRequest, opts ...grpc.CallOption) (*ReviewResponse, error) {
 	out := new(ReviewResponse)
 	err := grpc.Invoke(ctx, "/review.Review/Update", in, out, c.cc, opts...)
 	if err != nil {
@@ -250,8 +425,11 @@ func (c *reviewClient) Ping(ctx context.Context, in *Empty, opts ...grpc.CallOpt
 // Server API for Review service
 
 type ReviewServer interface {
+	// Create a new review
 	Create(context.Context, *ReviewRequest) (*ReviewResponse, error)
-	Update(context.Context, *ReviewRequest) (*ReviewResponse, error)
+	// Update an existing review
+	Update(context.Context, *ReviewUpdateRequest) (*ReviewResponse, error)
+	// Detect whether server works or not
 	Ping(context.Context, *Empty) (*Pong, error)
 }
 
@@ -278,7 +456,7 @@ func _Review_Create_Handler(srv interface{}, ctx context.Context, dec func(inter
 }
 
 func _Review_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReviewRequest)
+	in := new(ReviewUpdateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -290,7 +468,7 @@ func _Review_Update_Handler(srv interface{}, ctx context.Context, dec func(inter
 		FullMethod: "/review.Review/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReviewServer).Update(ctx, req.(*ReviewRequest))
+		return srv.(ReviewServer).Update(ctx, req.(*ReviewUpdateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -337,24 +515,29 @@ var _Review_serviceDesc = grpc.ServiceDesc{
 func init() { proto.RegisterFile("review.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 291 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x92, 0xc1, 0x4a, 0xfb, 0x40,
-	0x10, 0xc6, 0xbb, 0x6d, 0x9a, 0xa4, 0x43, 0xdb, 0xc3, 0xf0, 0xff, 0xcb, 0x12, 0x3c, 0x84, 0x05,
-	0x21, 0xa7, 0x1e, 0xf4, 0xe4, 0x51, 0x52, 0x0f, 0xbd, 0x48, 0x58, 0xf1, 0x01, 0x52, 0x33, 0xc4,
-	0x40, 0x9b, 0x8d, 0xc9, 0x56, 0xe9, 0xf3, 0x88, 0x2f, 0xe4, 0x13, 0xc9, 0xee, 0x26, 0x16, 0x3d,
-	0x7a, 0xf2, 0xb6, 0xbf, 0x6f, 0x67, 0x86, 0x6f, 0x98, 0x0f, 0xe6, 0x2d, 0xbd, 0x54, 0xf4, 0xba,
-	0x6a, 0x5a, 0xa5, 0x15, 0xfa, 0x8e, 0x44, 0x00, 0xd3, 0xdb, 0x7d, 0xa3, 0x8f, 0x42, 0x80, 0x97,
-	0xa9, 0xba, 0xc4, 0x08, 0x42, 0x49, 0x5d, 0xa3, 0xea, 0x8e, 0x38, 0x8b, 0x59, 0x32, 0x93, 0x5f,
-	0x2c, 0xde, 0x18, 0x2c, 0xa4, 0xed, 0x93, 0xf4, 0x7c, 0xa0, 0x4e, 0x23, 0x82, 0x77, 0x97, 0xef,
-	0x89, 0x8f, 0x6d, 0xa5, 0x7d, 0xe3, 0x3f, 0x33, 0x32, 0xaf, 0x76, 0x7c, 0x62, 0x45, 0x07, 0xc8,
-	0x21, 0x48, 0x55, 0xad, 0xa9, 0xd6, 0xdc, 0xb3, 0xfa, 0x80, 0x78, 0x0e, 0xb3, 0xec, 0xb0, 0xdd,
-	0x55, 0xdd, 0x13, 0x15, 0x7c, 0x1a, 0xb3, 0x24, 0x94, 0x27, 0xc1, 0x4c, 0xbb, 0x7f, 0x54, 0x2d,
-	0x71, 0x3f, 0x66, 0xc9, 0x44, 0x3a, 0x30, 0x2e, 0xd3, 0x5c, 0x53, 0xa9, 0xda, 0x23, 0x0f, 0x9c,
-	0xcb, 0x81, 0xc5, 0x07, 0x83, 0xe5, 0xe0, 0xd2, 0x19, 0xc7, 0x25, 0x8c, 0x37, 0xeb, 0x7e, 0x9d,
-	0xf1, 0x66, 0xfd, 0x17, 0x6d, 0x9b, 0x79, 0x69, 0x4b, 0xb9, 0xa6, 0xe2, 0x46, 0xf3, 0xd0, 0x7e,
-	0x9e, 0x84, 0xcb, 0x77, 0x06, 0xbe, 0x5b, 0x0a, 0xaf, 0xc1, 0x77, 0x3a, 0xfe, 0x5f, 0xf5, 0x37,
-	0xfd, 0x76, 0x94, 0xe8, 0xec, 0xa7, 0xdc, 0x9f, 0x6f, 0x64, 0x5a, 0x1f, 0x9a, 0xe2, 0x57, 0xad,
-	0x17, 0xe0, 0x65, 0x55, 0x5d, 0xe2, 0x62, 0xa8, 0xb0, 0xb1, 0x89, 0xe6, 0x03, 0x9a, 0xf0, 0x88,
-	0xd1, 0xd6, 0xb7, 0xf1, 0xba, 0xfa, 0x0c, 0x00, 0x00, 0xff, 0xff, 0x50, 0x02, 0x0d, 0xbe, 0x6e,
-	0x02, 0x00, 0x00,
+	// 370 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x53, 0x4f, 0x4f, 0xfa, 0x40,
+	0x10, 0x65, 0xa1, 0x94, 0x32, 0x3f, 0xe0, 0x97, 0x8c, 0x7f, 0xb2, 0x41, 0x0f, 0xa4, 0x89, 0x11,
+	0x2f, 0x1c, 0xf4, 0xe4, 0xc9, 0x28, 0x98, 0xc8, 0x85, 0x90, 0x35, 0x7a, 0x35, 0x45, 0x26, 0xd8,
+	0xa4, 0xb4, 0xb5, 0xdd, 0x62, 0xf8, 0x3c, 0x1e, 0xfd, 0x36, 0x7e, 0x1e, 0x0f, 0xa6, 0xbb, 0x2d,
+	0xb5, 0x26, 0x7a, 0xc2, 0x5b, 0xdf, 0xcb, 0xf4, 0xe5, 0xbd, 0x9d, 0x37, 0xd0, 0x8a, 0x68, 0xe5,
+	0xd2, 0xcb, 0x20, 0x8c, 0x02, 0x19, 0xa0, 0xa9, 0x91, 0xdd, 0x80, 0xfa, 0xf5, 0x32, 0x94, 0x6b,
+	0xdb, 0x06, 0x63, 0x1a, 0xf8, 0x0b, 0xec, 0x82, 0x25, 0x28, 0x0e, 0x03, 0x3f, 0x26, 0xce, 0x7a,
+	0xac, 0xdf, 0x14, 0x1b, 0x6c, 0xbf, 0x32, 0x68, 0x0b, 0xf5, 0x9f, 0xa0, 0xe7, 0x84, 0x62, 0x89,
+	0x08, 0xc6, 0xc4, 0x59, 0x12, 0xaf, 0xaa, 0x49, 0xf5, 0x8d, 0xbb, 0xa9, 0xa4, 0xe3, 0x7a, 0xbc,
+	0xa6, 0x48, 0x0d, 0x90, 0x43, 0x63, 0x18, 0xf8, 0x92, 0x7c, 0xc9, 0x0d, 0xc5, 0xe7, 0x10, 0x0f,
+	0xa1, 0x39, 0x4d, 0x66, 0x9e, 0x1b, 0x3f, 0xd1, 0x9c, 0xd7, 0x7b, 0xac, 0x6f, 0x89, 0x82, 0x48,
+	0xd5, 0x6e, 0x1f, 0x83, 0x88, 0xb8, 0xd9, 0x63, 0xfd, 0x9a, 0xd0, 0x20, 0x75, 0x39, 0x74, 0x24,
+	0x2d, 0x82, 0x68, 0xcd, 0x1b, 0xda, 0x65, 0x8e, 0xed, 0x0f, 0x06, 0x3b, 0xda, 0xe5, 0x5d, 0x38,
+	0x77, 0x24, 0xe5, 0x5e, 0x3b, 0x50, 0x1d, 0x8f, 0xb2, 0x4c, 0xd5, 0xf1, 0x68, 0x2b, 0xde, 0x37,
+	0xee, 0xea, 0x3f, 0xb9, 0x33, 0xcb, 0xee, 0xf0, 0x18, 0x3a, 0x61, 0x1e, 0xee, 0xc1, 0x4f, 0x3c,
+	0x4f, 0xf9, 0xb7, 0x6e, 0x2a, 0xa2, 0xbd, 0xe1, 0x27, 0x89, 0xe7, 0xe1, 0x09, 0xfc, 0x2f, 0x06,
+	0x57, 0x8e, 0x97, 0x10, 0xb7, 0xb2, 0xc9, 0x42, 0xe1, 0x3e, 0xe5, 0xaf, 0xfe, 0x7d, 0x79, 0x41,
+	0xfb, 0x9d, 0x41, 0x27, 0x5f, 0x92, 0xde, 0xdb, 0x9f, 0x24, 0xdf, 0xf2, 0xd6, 0x52, 0xbd, 0x61,
+	0x44, 0x8e, 0xa4, 0xf9, 0xa5, 0x54, 0x41, 0x9b, 0xa2, 0x20, 0x4e, 0xdf, 0x18, 0x98, 0x3a, 0x14,
+	0x9e, 0x83, 0xa9, 0x79, 0xdc, 0x1b, 0x64, 0x95, 0x2e, 0x75, 0xb2, 0xbb, 0xff, 0x9d, 0xce, 0xda,
+	0x5b, 0xc1, 0x0b, 0x30, 0x75, 0x25, 0xf0, 0xa0, 0x3c, 0x53, 0x2a, 0xca, 0x2f, 0x02, 0x47, 0x60,
+	0x4c, 0x5d, 0x7f, 0x81, 0xed, 0x7c, 0x42, 0xdd, 0x4e, 0xb7, 0x95, 0xc3, 0xf4, 0x82, 0xec, 0xca,
+	0xcc, 0x54, 0x37, 0x76, 0xf6, 0x19, 0x00, 0x00, 0xff, 0xff, 0x46, 0x72, 0x3f, 0xa0, 0x73, 0x03,
+	0x00, 0x00,
 }
