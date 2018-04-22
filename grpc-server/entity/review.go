@@ -25,6 +25,18 @@ type (
 		Category  sql.NullString
 		Score     Score
 	}
+
+	ReviewM struct {
+		ID        string         `json:"id"`
+		Name      string         `json:"name"`
+		Email     string         `json:"email"`
+		Content   string         `json:"content"`
+		Published sql.NullBool   `json:"published"`
+		Score     sql.NullInt64  `json:"score"`
+		Category  sql.NullString `json:"category"`
+		CreatedAt string         `json:"created_at"`
+	}
+
 	// ReviewUpdate represent a private entity that would be used for updating an existing review
 	ReviewUpdate struct {
 		*pb.ReviewUpdateRequest

@@ -47,6 +47,36 @@ func (ctrl reviewService) Create(ctx context.Context, rr entity.ReviewRequest) (
 	}, nil
 }
 
+func (ctrl reviewService) Update(ctx context.Context, ID string, rr entity.ReviewUpdateRequest) (*entity.Review, error) {
+	in := pb.ReviewUpdateRequest{
+		ID:    ID,
+		Name:  rr.Name,
+		Email: rr.Email,
+	}
+
+	if rr.Published.Valid {
+		in.Published = &pb.ReviewUpdateRequest_PublishedValue{PublishedValue: rr.Published.Value}
+	} else {
+		in.Published = &pb.ReviewUpdateRequest_PublishedNull{PublishedNull: true}
+	}
+	r, err := ctrl.client.Update(ctx, &in)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("BABA", r)
+	return &entity.Review{
+		ID:        r.ID,
+		Name:      r.Name,
+		Email:     r.Email,
+		Content:   r.Content,
+		Published: r.Published,
+		Score:     entity.Score(r.Score),
+		Category:  entity.NullString(r.Category),
+		CreatedAt: r.CreatedAt,
+	}, nil
+}
+
 func init() {
 	conn, err := grpc.Dial(os.Getenv("GRPC_ADDRESS"), grpc.WithInsecure())
 	if err != nil {

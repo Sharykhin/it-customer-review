@@ -19,3 +19,18 @@ func ConvertReviewToResponse(r *entity.Review) (*pb.ReviewResponse, error) {
 
 	return &res, nil
 }
+
+func ConvertReviewMToResponse(r *entity.ReviewM) (*pb.ReviewResponse, error) {
+	res := pb.ReviewResponse{
+		ID:        r.ID,
+		Name:      r.Name,
+		Email:     r.Email,
+		Content:   r.Content,
+		Published: r.Published.Bool,
+		Score:     r.Score.Int64,
+		Category:  r.Category.String,
+		CreatedAt: r.CreatedAt,
+	}
+
+	return &res, nil
+}

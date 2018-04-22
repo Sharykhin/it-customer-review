@@ -41,15 +41,31 @@ func (s server) Ping(ctx context.Context, in *pb.Empty) (*pb.Pong, error) {
 	return &pb.Pong{Response: "pong"}, nil
 }
 
-func (s server) Update(ctx context.Context, request *pb.ReviewUpdateRequest) (*pb.ReviewResponse, error) {
-	//review := new(pb.ReviewResponse)
-	//review.ID = "asd"
-	//review.Name = request.Name
-	//review.Email = request.Email
-	//review.Content = request.Content
-	//review.Published = request.Published
-	//review.Score = int64(request.Score)
-	//review.Category = request.Category
-	//review.CreatedAt = time.Now().UTC().Format("2006-01-02T15:04:05")
-	return nil, nil
+func (s server) Update(ctx context.Context, in *pb.ReviewUpdateRequest) (*pb.ReviewResponse, error) {
+
+	ru := entity.ReviewUpdate{ReviewUpdateRequest: in}
+
+	if err := ru.Validate(); err != nil {
+		return nil, fmt.Errorf("validate error on update: %v", err)
+	}
+
+	review, err := s.storage.GetById(ctx, in.ID)
+	if err != nil {
+		return nil, fmt.Errorf("could not get a review by id %s: %v", in.ID, err)
+	}
+	if review == nil {
+		return nil, fmt.Errorf("review with ID %s does not exist", in.ID)
+	}
+
+	review, err = s.storage.Update(ctx, ru, review)
+	if err != nil {
+		return nil, fmt.Errorf("storage could not update a review: %v", err)
+	}
+
+	res, err := service.ConvertReviewMToResponse(review)
+	if err != nil {
+		return nil, fmt.Errorf("could not convert reiew entity to response: %v", err)
+	}
+
+	return res, nil
 }

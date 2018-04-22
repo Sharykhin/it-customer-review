@@ -10,5 +10,6 @@ type (
 	// ServiceProvider is an interface that describe method for some sort of data storage
 	ServiceProvider interface {
 		Create(ctx context.Context, rr entity.ReviewRequest) (*entity.Review, error)
+		Update(ctx context.Context, ID string, rr entity.ReviewUpdateRequest) (*entity.Review, error)
 	}
 )

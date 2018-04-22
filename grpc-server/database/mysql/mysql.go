@@ -11,7 +11,6 @@ import (
 
 	"strings"
 
-	pb "github.com/Sharykhin/it-customer-review/grpc-proto"
 	"github.com/Sharykhin/it-customer-review/grpc-server/entity"
 	_ "github.com/go-sql-driver/mysql" // dependency of mysql
 )
@@ -68,29 +67,31 @@ func (s storage) Create(ctx context.Context, r *entity.Review) (*entity.Review, 
 	return r, nil
 }
 
-func (s storage) Update(ctx context.Context, r *pb.ReviewUpdateRequest) (*entity.Review, error) {
-	var general = "UPDATE reviews %s WHERE `id` = ?"
+func (s storage) Update(ctx context.Context, ru entity.ReviewUpdate, r *entity.ReviewM) (*entity.ReviewM, error) {
+	var general = "UPDATE reviews SET `updated_at`=NOW(), %s WHERE `id` = ?"
 	var sets []string
 	var replacement []interface{}
-	// TODO: think about validating since we accept request directly
 
-	if r.Name != "" {
-		sets = append(sets, "SET `name`=?")
-		replacement = append(replacement, r.Name)
+	if ru.Name != "" {
+		sets = append(sets, "`name`=?")
+		replacement = append(replacement, ru.Name)
+		r.Name = ru.Name
 	}
 
-	if !r.GetPublishedNull() {
-		sets = append(sets, "SET `published`=?")
-		replacement = append(replacement, r.GetPublishedValue())
+	if !ru.GetPublishedNull() {
+		sets = append(sets, "`published`=?")
+		replacement = append(replacement, ru.GetPublishedValue())
+		r.Published = sql.NullBool{Valid: true, Bool: ru.GetPublishedValue()}
 	}
 
-	if r.Email != "" {
-		sets = append(sets, "SET `email`=?")
-		replacement = append(replacement, r.Email)
+	if ru.Email != "" {
+		sets = append(sets, "`email`=?")
+		replacement = append(replacement, ru.Email)
+		r.Email = ru.Email
 	}
 
 	var query = fmt.Sprintf(general, strings.Join(sets, ","))
-	replacement = append(replacement, r.ID)
+	replacement = append(replacement, ru.ID)
 
 	_, err := s.db.ExecContext(
 		ctx,
@@ -101,26 +102,15 @@ func (s storage) Update(ctx context.Context, r *pb.ReviewUpdateRequest) (*entity
 	if err != nil {
 		return nil, fmt.Errorf("could not make update statement: %v", err)
 	}
+	return r, nil
+}
 
-	fmt.Println(query)
-	return nil, nil
-	//_, err := s.db.ExecContext(
-	//	ctx,
-	//	"UPDATE reviews SET `name` = ?, `email` = ?, `content` = ?, `published` = ?, `score` = ?, `category` = ?, `updated_at` = NOW() WHERE `id` = ?",
-	//	r.Name,
-	//	r.Email,
-	//	r.Content,
-	//	r.Published,
-	//	r.Score,
-	//	r.Category,
-	//	r.ID,
-	//)
-
-	// TODO: put UpdatedAt here
-
-	//if err != nil {
-	//	return nil, fmt.Errorf("could not make insert statement: %v", err)
-	//}
-	//
-	//return r, nil
+func (s storage) GetById(ctx context.Context, ID string) (*entity.ReviewM, error) {
+	var r entity.ReviewM
+	row := s.db.QueryRowContext(ctx, "SELECT `id`,`name`,`email`,`content`,`published`,`category`,`score`,`created_at` FROM reviews WHERE id = ?", ID)
+	err := row.Scan(&r.ID, &r.Name, &r.Email, &r.Content, &r.Published, &r.Category, &r.Score, &r.CreatedAt)
+	if err != nil {
+		return nil, fmt.Errorf("could not get a review by id %s: %v", ID, err)
+	}
+	return &r, nil
 }

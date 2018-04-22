@@ -39,8 +39,8 @@ message ReviewUpdateRequest {
     int64 Score = 5;
     string Category = 6;
     oneof Published {
-        bool published_null = 7;  // always set this to "true" when using
-        bool published_value = 8;
+        bool Published_null = 7;  // always set this to "true" when using
+        bool Published_value = 8;
     }
 }
 
