@@ -1,30 +1,26 @@
 package entity
 
-import "encoding/json"
-
 type (
+	// ReviewUpdateRequest is an update request with limited number of fields that can be updated
 	ReviewUpdateRequest struct {
-		Name      string   `json:"name"`
-		Email     string   `json:"email"`
-		Published NullBool `json:"published"`
-	}
-
-	NullBool struct {
-		Valid bool
-		Value bool
+		Name      NullString `json:"name"`
+		Content   NullString `json:"content"`
+		Published NullBool   `json:"published"`
 	}
 )
 
-func (n *NullBool) UnmarshalJSON(b []byte) error {
-	if n == nil {
-		n.Value = false
-		n.Valid = false
-		return nil
+// Validate validates income request on updating a review
+func (rr ReviewUpdateRequest) Validate() error {
+	if rr.Name.Valid {
+		if err := validateName(rr.Name.Value); err != nil {
+			return err
+		}
 	}
-	n.Valid = true
-	err := json.Unmarshal(b, &n.Value)
-	if err != nil {
-		return err
+
+	if rr.Content.Valid {
+		if err := validateContent(rr.Content.Value); err != nil {
+			return err
+		}
 	}
 	return nil
 }

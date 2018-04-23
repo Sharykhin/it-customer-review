@@ -51,18 +51,3 @@ func validateContent(content string) error {
 
 	return nil
 }
-
-func validateCategory(category string) error {
-	var trimmedCategory = strings.Trim(category, " ")
-	if trimmedCategory != "" && (trimmedCategory != "positive" && trimmedCategory != "negative") {
-		return errors.New("category must have one of values: positive or negative")
-	}
-	return nil
-}
-
-func validateScore(score int64) error {
-	if score < -1 || score > 100 {
-		return errors.New("score is out of range:, it must be in 0-100")
-	}
-	return nil
-}

@@ -5,8 +5,6 @@ import (
 	"log"
 	"os"
 
-	"fmt"
-
 	"github.com/Sharykhin/it-customer-review/api/contract"
 	"github.com/Sharykhin/it-customer-review/api/entity"
 	pb "github.com/Sharykhin/it-customer-review/grpc-proto"
@@ -22,61 +20,6 @@ type (
 // ReviewService is a grpc service that would be responsible for managing reviews.
 var ReviewService contract.ServiceProvider
 
-func (ctrl reviewService) Create(ctx context.Context, rr entity.ReviewRequest) (*entity.Review, error) {
-
-	r, err := ctrl.client.Create(ctx, &pb.ReviewRequest{
-		Name:    rr.Name,
-		Email:   rr.Email,
-		Content: rr.Content,
-		Score:   -1,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(r)
-	return &entity.Review{
-		ID:        r.ID,
-		Name:      r.Name,
-		Email:     r.Email,
-		Content:   r.Content,
-		Published: r.Published,
-		Score:     entity.Score(r.Score),
-		Category:  entity.NullString(r.Category),
-		CreatedAt: r.CreatedAt,
-	}, nil
-}
-
-func (ctrl reviewService) Update(ctx context.Context, ID string, rr entity.ReviewUpdateRequest) (*entity.Review, error) {
-	in := pb.ReviewUpdateRequest{
-		ID:    ID,
-		Name:  rr.Name,
-		Email: rr.Email,
-	}
-
-	if rr.Published.Valid {
-		in.Published = &pb.ReviewUpdateRequest_PublishedValue{PublishedValue: rr.Published.Value}
-	} else {
-		in.Published = &pb.ReviewUpdateRequest_PublishedNull{PublishedNull: true}
-	}
-	r, err := ctrl.client.Update(ctx, &in)
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Println("BABA", r)
-	return &entity.Review{
-		ID:        r.ID,
-		Name:      r.Name,
-		Email:     r.Email,
-		Content:   r.Content,
-		Published: r.Published,
-		Score:     entity.Score(r.Score),
-		Category:  entity.NullString(r.Category),
-		CreatedAt: r.CreatedAt,
-	}, nil
-}
-
 func init() {
 	conn, err := grpc.Dial(os.Getenv("GRPC_ADDRESS"), grpc.WithInsecure())
 	if err != nil {
@@ -88,4 +31,87 @@ func init() {
 		log.Fatalf("Could not ping a grpc server: %v", err)
 	}
 	ReviewService = reviewService{client: client}
+}
+
+func (ctrl reviewService) Create(ctx context.Context, rr entity.ReviewRequest) (*entity.Review, error) {
+
+	res, err := ctrl.client.Create(ctx, &pb.ReviewCreateRequest{
+		Name:      rr.Name,
+		Email:     rr.Email,
+		Content:   rr.Content,
+		Published: false,
+		Score:     &pb.ReviewCreateRequest_ScoreNull{ScoreNull: true},
+		Category:  &pb.ReviewCreateRequest_CategoryNull{CategoryNull: true},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	r := convert(res)
+	return r, nil
+}
+
+func (ctrl reviewService) Update(ctx context.Context, ID string, rr entity.ReviewUpdateRequest) (*entity.Review, error) {
+	var fu pb.FieldToUpdate
+
+	if rr.Name.Valid {
+		fu.Name = &pb.FieldToUpdate_NameValue{NameValue: rr.Name.Value}
+	} else {
+		fu.Name = &pb.FieldToUpdate_NameNull{NameNull: true}
+	}
+
+	if rr.Content.Valid {
+		fu.Content = &pb.FieldToUpdate_ContentValue{ContentValue: rr.Content.Value}
+	} else {
+		fu.Content = &pb.FieldToUpdate_ContentNull{ContentNull: true}
+	}
+
+	if rr.Published.Valid {
+		fu.Published = &pb.FieldToUpdate_PublishedValue{PublishedValue: rr.Published.Value}
+	} else {
+		fu.Published = &pb.FieldToUpdate_PublishedNull{PublishedNull: true}
+	}
+
+	fu.Score = &pb.FieldToUpdate_ScoreNull{ScoreNull: true}
+	fu.Category = &pb.FieldToUpdate_CategoryNull{CategoryNull: true}
+
+	in := pb.ReviewUpdateRequest{
+		ID:             ID,
+		FieldsToUpdate: &fu,
+	}
+
+	res, err := ctrl.client.Update(ctx, &in)
+	if err != nil {
+		return nil, err
+	}
+
+	r := convert(res)
+	return r, nil
+}
+
+func convert(res *pb.ReviewResponse) *entity.Review {
+
+	r := entity.Review{
+		ID:        res.ID,
+		Name:      res.Name,
+		Email:     res.Email,
+		Content:   res.Content,
+		Published: res.Published,
+		CreatedAt: res.CreatedAt,
+		UpdatedAt: res.UpdatedAt,
+	}
+
+	if res.GetCategoryNull() {
+		r.Category = entity.NullString{Valid: false}
+	} else {
+		r.Category = entity.NullString{Valid: true, Value: res.GetCategoryValue()}
+	}
+
+	if res.GetScoreNull() {
+		r.Score = entity.Score(-1)
+	} else {
+		r.Score = entity.Score(res.GetScoreValue())
+	}
+	return &r
 }

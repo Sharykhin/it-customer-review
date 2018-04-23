@@ -15,11 +15,12 @@ type (
 		Score     Score      `json:"score"`
 		Category  NullString `json:"category"`
 		CreatedAt string     `json:"created_at"`
+		UpdatedAt string     `json:"updated_at"`
 	}
 	// Score is a specific type that returns nil in case -1 is provided
 	Score int64
 	// NullString returns nullable value for a client
-	NullString string
+	//NullString string
 )
 
 // MarshalJSON returns null in case -1 is provided
@@ -29,12 +30,4 @@ func (s Score) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.Marshal(int64(s))
-}
-
-// MarshalJSON returns nullabel value
-func (t NullString) MarshalJSON() ([]byte, error) {
-	if t == "" {
-		return json.Marshal(nil)
-	}
-	return []byte(t), nil
 }

@@ -8,7 +8,7 @@ test:
 	go test -v ./...
 
 lint:
-	gometalinter.v2 ./...
+	gometalinter.v2 ./... --deadline=60s
 
 migrate-up:
 	migrate -database "mysql://${DB_USER}:${DB_PASS}@tcp(${DB_HOST}:3306)/${DB_NAME}" -path migration/ up
