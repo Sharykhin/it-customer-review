@@ -11,13 +11,14 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc"
 )
 
 type mockStorage struct {
 	mock.Mock
 }
 
-func (m mockStorage) Create(ctx context.Context, in *pb.ReviewCreateRequest) (*pb.ReviewResponse, error) {
+func (m mockStorage) Create(ctx context.Context, in *pb.ReviewCreateRequest, opts ...grpc.CallOption) (*pb.ReviewResponse, error) {
 	args := m.Called(ctx, in)
 	res, err := args.Get(0), args.Error(1)
 	if err != nil {
@@ -26,7 +27,7 @@ func (m mockStorage) Create(ctx context.Context, in *pb.ReviewCreateRequest) (*p
 	return res.(*pb.ReviewResponse), nil
 }
 
-func (m mockStorage) Update(ctx context.Context, in *pb.ReviewUpdateRequest) (*pb.ReviewResponse, error) {
+func (m mockStorage) Update(ctx context.Context, in *pb.ReviewUpdateRequest, opts ...grpc.CallOption) (*pb.ReviewResponse, error) {
 	args := m.Called(ctx, in)
 	res, err := args.Get(0), args.Error(1)
 	if err != nil {
@@ -35,7 +36,7 @@ func (m mockStorage) Update(ctx context.Context, in *pb.ReviewUpdateRequest) (*p
 	return res.(*pb.ReviewResponse), nil
 }
 
-func (m mockStorage) Get(ctx context.Context, in *pb.ReviewID) (*pb.ReviewResponse, error) {
+func (m mockStorage) Get(ctx context.Context, in *pb.ReviewID, opts ...grpc.CallOption) (*pb.ReviewResponse, error) {
 	args := m.Called(ctx, in)
 	res, err := args.Get(0), args.Error(1)
 	if err != nil {
@@ -44,7 +45,7 @@ func (m mockStorage) Get(ctx context.Context, in *pb.ReviewID) (*pb.ReviewRespon
 	return res.(*pb.ReviewResponse), nil
 }
 
-func (m mockStorage) Ping(ctx context.Context, in *pb.Empty) (*pb.Pong, error) {
+func (m mockStorage) Ping(ctx context.Context, in *pb.Empty, opts ...grpc.CallOption) (*pb.Pong, error) {
 	args := m.Called(ctx, in)
 	res, err := args.Get(0), args.Error(1)
 	if err != nil {
@@ -53,7 +54,7 @@ func (m mockStorage) Ping(ctx context.Context, in *pb.Empty) (*pb.Pong, error) {
 	return res.(*pb.Pong), nil
 }
 
-func (m mockStorage) GetReviewList(ctx context.Context, in *pb.ReviewListFilter) (pb.Review_GetReviewListClient, error) {
+func (m mockStorage) GetReviewList(ctx context.Context, in *pb.ReviewListFilter, opts ...grpc.CallOption) (pb.Review_GetReviewListClient, error) {
 	args := m.Called(ctx, in)
 	res, err := args.Get(0), args.Error(1)
 	if err != nil {
@@ -62,7 +63,7 @@ func (m mockStorage) GetReviewList(ctx context.Context, in *pb.ReviewListFilter)
 	return res.(*pb.Review_GetReviewListClient), nil
 }
 
-func (m mockStorage) CountReviews(ctx context.Context, in *pb.ReviewCountFilter) (*pb.CountResponse, error) {
+func (m mockStorage) CountReviews(ctx context.Context, in *pb.ReviewCountFilter, opts ...grpc.CallOption) (*pb.CountResponse, error) {
 	args := m.Called(ctx, in)
 	res, err := args.Get(0), args.Error(1)
 	if err != nil {
