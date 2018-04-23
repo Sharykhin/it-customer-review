@@ -41,6 +41,11 @@ func create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = publishAnalyzeJob(review.ID, review.Content)
+	if err != nil {
+		log.Printf("could not dispatch analyzer job: %v", err)
+	}
+
 	util.JSON(util.Response{
 		Success: true,
 		Data:    review,

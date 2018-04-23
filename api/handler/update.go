@@ -6,6 +6,8 @@ import (
 
 	"encoding/json"
 
+	"fmt"
+
 	"github.com/Sharykhin/it-customer-review/api/entity"
 	"github.com/Sharykhin/it-customer-review/api/grpc"
 	"github.com/Sharykhin/it-customer-review/api/util"
@@ -54,6 +56,13 @@ func update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if rr.Content.Valid {
+		err := publishAnalyzeJob(review.ID, review.Content)
+		if err != nil {
+			log.Printf("could not dispatch analyzer job: %v", err)
+		}
+	}
+	fmt.Println(review)
 	util.JSON(util.Response{
 		Success: true,
 		Data:    review,

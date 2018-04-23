@@ -5,14 +5,10 @@ import (
 
 	"log"
 
-	"github.com/Sharykhin/it-customer-review/tone-analyzer/analyzer"
+	"github.com/Sharykhin/it-customer-review/tone-analyzer/handler"
 )
 
 func main() {
-	a := analyzer.Analyzer
-	s, err := a.Analyze("I have some ideas but let's discuss them together.")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("Score", s)
+	fmt.Println(" [*] Waiting for messages. To exit press CTRL+C")
+	log.Fatal(handler.ListenAndServe())
 }

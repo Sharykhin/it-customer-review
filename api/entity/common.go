@@ -32,7 +32,7 @@ func (n *NullString) MarshalJSON() ([]byte, error) {
 	if n == nil || !n.Valid {
 		return json.Marshal(nil)
 	}
-	return []byte(n.Value), nil
+	return json.Marshal(n.Value)
 }
 
 // UnmarshalJSON implements Unmarshaler interface to allow not to provide value at all

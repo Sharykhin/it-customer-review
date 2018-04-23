@@ -12,4 +12,8 @@ type (
 		Create(ctx context.Context, rr entity.ReviewRequest) (*entity.Review, error)
 		Update(ctx context.Context, ID string, rr entity.ReviewUpdateRequest) (*entity.Review, error)
 	}
+	// QueueMessageProvider describes funcs that should be implemented to make queue work as expected.
+	QueueMessageProvider interface {
+		Publish(body []byte) error
+	}
 )
