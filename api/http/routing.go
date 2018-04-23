@@ -34,6 +34,11 @@ func router() http.Handler {
 			middleware.PanicRecover,
 			middleware.CORS,
 		))).Methods("PUT")
+	r.Handle("/reviews", middleware.Chain(
+		middleware.Chain(http.HandlerFunc(handler.Index),
+			middleware.PanicRecover,
+			middleware.CORS,
+		))).Methods("GET")
 	return r
 }
 

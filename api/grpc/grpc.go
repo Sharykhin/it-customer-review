@@ -5,6 +5,9 @@ import (
 	"log"
 	"os"
 
+	"fmt"
+	"io"
+
 	"github.com/Sharykhin/it-customer-review/api/contract"
 	"github.com/Sharykhin/it-customer-review/api/entity"
 	pb "github.com/Sharykhin/it-customer-review/grpc-proto"
@@ -14,6 +17,16 @@ import (
 type (
 	reviewService struct {
 		client pb.ReviewClient
+	}
+
+	listResult struct {
+		err  error
+		list []entity.Review
+	}
+
+	countResult struct {
+		err   error
+		total int64
 	}
 )
 
@@ -97,6 +110,117 @@ func (ctrl reviewService) Get(ctx context.Context, ID string) (*entity.Review, e
 	}
 	r := convert(res)
 	return r, nil
+}
+
+func (ctrl reviewService) Index(ctx context.Context, criteria []entity.Criteria, limit, offset int64) ([]entity.Review, int64, error) {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	chList := ctrl.runList(ctx, criteria, limit, offset)
+	chCount := ctrl.runCount(ctx, criteria)
+
+	var rl []entity.Review
+	var total int64
+
+	for {
+		if chList == nil && chCount == nil {
+			return rl, total, nil
+		}
+		select {
+		case listRes, ok := <-chList:
+			if !ok {
+				chList = nil
+				continue
+			}
+			if listRes.err != nil {
+				cancel()
+				return nil, 0, listRes.err
+			}
+			rl = listRes.list
+		case countRes, ok := <-chCount:
+			if !ok {
+				chCount = nil
+				continue
+			}
+			if countRes.err != nil {
+				cancel()
+				return nil, 0, countRes.err
+			}
+			total = countRes.total
+		}
+	}
+}
+
+func (ctrl reviewService) runList(ctx context.Context, criteria []entity.Criteria, limit, offset int64) <-chan listResult {
+	chListResult := make(chan listResult)
+	go func() {
+		defer close(chListResult)
+		var lr listResult
+		var rl []entity.Review
+		var c []*pb.Criteria
+		for _, filter := range criteria {
+			c = append(c, &pb.Criteria{Key: filter.Key, Value: filter.Value})
+		}
+		stream, err := ctrl.client.GetReviewList(ctx, &pb.ReviewListFilter{Criteria: c, Limit: limit, Offset: offset})
+
+		if err != nil {
+			lr.err = err
+		} else {
+			for {
+				res, err := stream.Recv()
+				if err == io.EOF {
+					break
+				}
+				if err != nil {
+					lr.err = fmt.Errorf("failed to get a review from a stream: %v", err)
+					break
+				}
+				r := convert(res)
+				rl = append(rl, *r)
+			}
+		}
+
+		lr.list = rl
+		select {
+		case <-ctx.Done():
+			return
+		case chListResult <- lr:
+		}
+	}()
+	return chListResult
+}
+
+func (ctrl reviewService) runCount(ctx context.Context, criteria []entity.Criteria) <-chan countResult {
+	chCountResult := make(chan countResult)
+	go func() {
+		defer close(chCountResult)
+		var cr countResult
+		var c []*pb.Criteria
+		for _, filter := range criteria {
+			c = append(c, &pb.Criteria{Key: filter.Key, Value: filter.Value})
+		}
+
+		t, err := ctrl.client.CountReviews(ctx, &pb.ReviewCountFilter{Criteria: c})
+		if err != nil {
+			cr.err = err
+		}
+
+		cr.total = t.Total
+		select {
+		case <-ctx.Done():
+			return
+		case chCountResult <- cr:
+		}
+	}()
+	return chCountResult
+}
+
+func (ctrl reviewService) Count(ctx context.Context, criteria *pb.ReviewCountFilter) (int64, error) {
+	res, err := ctrl.client.CountReviews(ctx, criteria)
+	if err != nil {
+		return 0, err
+	}
+	return res.Total, nil
 }
 
 func convert(res *pb.ReviewResponse) *entity.Review {

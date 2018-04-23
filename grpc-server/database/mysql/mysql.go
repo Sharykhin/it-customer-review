@@ -11,7 +11,9 @@ import (
 
 	"strings"
 
+	pb "github.com/Sharykhin/it-customer-review/grpc-proto"
 	"github.com/Sharykhin/it-customer-review/grpc-server/entity"
+	"github.com/Sharykhin/it-customer-review/grpc-server/util"
 	_ "github.com/go-sql-driver/mysql" // dependency of mysql
 )
 
@@ -135,4 +137,76 @@ func (s storage) GetByID(ctx context.Context, ID string) (*entity.Review, error)
 		return nil, fmt.Errorf("could not get a review by id %s: %v", ID, err)
 	}
 	return &r, nil
+}
+
+func (s storage) GetList(ctx context.Context, criteria []*pb.Criteria, limit, offset int64) ([]entity.Review, error) {
+	var query = "SELECT `id`,`name`,`email`,`content`,`published`,`category`,`score`,`created_at`,`updated_at` FROM reviews"
+	conditions, replacement := applyCrireria(criteria)
+	if len(conditions) > 0 {
+		query = fmt.Sprintf(query+" WHERE %s", strings.Join(conditions, " AND "))
+	}
+
+	query = query + " ORDER BY `created_at` DESC LIMIT ? OFFSET ?"
+	replacement = append(replacement, limit)
+	replacement = append(replacement, offset)
+
+	rows, err := s.db.QueryContext(ctx, query, replacement...)
+	if err != nil {
+		return nil, fmt.Errorf("could not make a select statement: %v", err)
+	}
+	defer util.Check(rows.Close)
+
+	var rl []entity.Review
+	for rows.Next() {
+		var r entity.Review
+		err := rows.Scan(&r.ID, &r.Name, &r.Email, &r.Content, &r.Published, &r.Category, &r.Score, &r.CreatedAt, &r.UpdatedAt)
+		if err != nil {
+			return nil, fmt.Errorf("could not scan a row to struct: %v", err)
+		}
+		rl = append(rl, r)
+	}
+
+	return rl, rows.Err()
+}
+
+func (s storage) Count(ctx context.Context, criteria []*pb.Criteria) (int64, error) {
+	var query = "SELECT COUNT(`id`) as `total` FROM reviews"
+	var total int64
+	conditions, replacement := applyCrireria(criteria)
+
+	if len(conditions) > 0 {
+		query = fmt.Sprintf(query+" WHERE %s", strings.Join(conditions, " AND "))
+	}
+
+	row := s.db.QueryRowContext(ctx, query, replacement...)
+	err := row.Scan(&total)
+	if err != nil {
+		return 0, err
+	}
+	return total, nil
+}
+
+func applyCrireria(criteria []*pb.Criteria) ([]string, []interface{}) {
+	var conditions []string
+	var replacement []interface{}
+
+	for _, c := range criteria {
+		var con string
+		switch c.Key {
+		case "category":
+			con = "`category` = ?"
+			conditions = append(conditions, con)
+			replacement = append(replacement, c.Value)
+
+		case "published":
+			con = "`published` = ?"
+			conditions = append(conditions, con)
+			if c.Value == "true" {
+				replacement = append(replacement, true)
+			} else {
+				replacement = append(replacement, false)
+			}
+		}
+	}
+	return conditions, replacement
 }
