@@ -35,7 +35,7 @@ func create(w http.ResponseWriter, r *http.Request) {
 		util.JSON(util.Response{
 			Success: false,
 			Data:    nil,
-			Error:   util.ErrorField{},
+			Error:   util.ErrorField{Err: errors.New(http.StatusText(http.StatusInternalServerError))},
 			Meta:    nil,
 		}, w, http.StatusInternalServerError)
 		return
