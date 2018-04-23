@@ -1,14 +1,8 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 
-	"encoding/json"
-
-	"fmt"
-
-	"github.com/Sharykhin/it-customer-review/api/entity"
 	"github.com/Sharykhin/it-customer-review/api/grpc"
 	"github.com/Sharykhin/it-customer-review/api/util"
 	"github.com/gorilla/mux"
@@ -17,23 +11,12 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func update(w http.ResponseWriter, r *http.Request) {
+// Get returns a review by its ID
+func Get(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
-	decoder := json.NewDecoder(r.Body)
-	defer util.Check(r.Body.Close)
-	var rr entity.ReviewUpdateRequest
-	if err := decoder.Decode(&rr); err != nil {
-		util.JSONBadRequest(errors.New("please provide a valid json"), w)
-		return
-	}
 
-	if err := rr.Validate(); err != nil {
-		util.JSONBadRequest(err, w)
-		return
-	}
-
-	review, err := grpc.ReviewService.Update(r.Context(), id, rr)
+	review, err := grpc.ReviewService.Get(r.Context(), id)
 
 	if err != nil {
 		err := status.Convert(err)
@@ -46,7 +29,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 			}, w, http.StatusNotFound)
 			return
 		}
-		log.Printf("could not update a review: %v", err)
+
 		util.JSON(util.Response{
 			Success: false,
 			Data:    nil,
@@ -56,13 +39,6 @@ func update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if rr.Content.Valid {
-		err := publishAnalyzeJob(review.ID, review.Content)
-		if err != nil {
-			log.Printf("could not dispatch analyzer job: %v", err)
-		}
-	}
-	fmt.Println(review)
 	util.JSON(util.Response{
 		Success: true,
 		Data:    review,

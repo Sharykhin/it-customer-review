@@ -1,23 +1,29 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"encoding/json"
 
-	"log"
+	"fmt"
 
 	"github.com/Sharykhin/it-customer-review/api/entity"
 	"github.com/Sharykhin/it-customer-review/api/grpc"
 	"github.com/Sharykhin/it-customer-review/api/util"
+	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
-// create creates a new review in a database
-func create(w http.ResponseWriter, r *http.Request) {
+// Update updates an existing review
+func Update(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
 	decoder := json.NewDecoder(r.Body)
 	defer util.Check(r.Body.Close)
-	var rr entity.ReviewRequest
+	var rr entity.ReviewUpdateRequest
 	if err := decoder.Decode(&rr); err != nil {
 		util.JSONBadRequest(errors.New("please provide a valid json"), w)
 		return
@@ -28,10 +34,20 @@ func create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	review, err := grpc.ReviewService.Create(r.Context(), rr)
+	review, err := grpc.ReviewService.Update(r.Context(), id, rr)
 
 	if err != nil {
-		log.Printf("could not create a new review: %v", err)
+		err := status.Convert(err)
+		if err.Code() == codes.NotFound {
+			util.JSON(util.Response{
+				Success: false,
+				Data:    nil,
+				Error:   util.ErrorField{Err: errors.New(err.Message())},
+				Meta:    nil,
+			}, w, http.StatusNotFound)
+			return
+		}
+		log.Printf("could not update a review: %v", err)
 		util.JSON(util.Response{
 			Success: false,
 			Data:    nil,
@@ -41,15 +57,17 @@ func create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = publishAnalyzeJob(review.ID, review.Content)
-	if err != nil {
-		log.Printf("could not dispatch analyzer job: %v", err)
+	if rr.Content.Valid {
+		err := publishAnalyzeJob(review.ID, review.Content)
+		if err != nil {
+			log.Printf("could not dispatch analyzer job: %v", err)
+		}
 	}
-
+	fmt.Println(review)
 	util.JSON(util.Response{
 		Success: true,
 		Data:    review,
 		Error:   util.ErrorField{Err: nil},
 		Meta:    nil,
-	}, w, http.StatusCreated)
+	}, w, http.StatusOK)
 }

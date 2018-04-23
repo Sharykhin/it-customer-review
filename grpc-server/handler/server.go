@@ -18,10 +18,13 @@ type server struct {
 	storage contract.ReviewManager
 }
 
+// Ping implements some kind of live check
 func (s server) Ping(ctx context.Context, in *pb.Empty) (*pb.Pong, error) {
 	return &pb.Pong{Response: "pong"}, nil
 }
 
+// Create creates a new review. This func also makes validation since we can't totally rely
+// that other services would provide a valida data
 func (s server) Create(ctx context.Context, in *pb.ReviewCreateRequest) (*pb.ReviewResponse, error) {
 
 	r := entity.NewReview()
@@ -42,16 +45,16 @@ func (s server) Create(ctx context.Context, in *pb.ReviewCreateRequest) (*pb.Rev
 	}
 
 	if err := r.Validate(); err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.InvalidArgument, err.Error())
 	}
 
 	r, err := s.storage.Create(ctx, r)
 	if err != nil {
-		return nil, fmt.Errorf("storage could not create a new review: %v", err)
+		return nil, status.Errorf(codes.Internal, "storage could not create a new review: %v", err)
 	}
 	res, err := convert(r)
 	if err != nil {
-		return nil, fmt.Errorf("could not convert reiew entity to response: %v", err)
+		return nil, status.Errorf(codes.Internal, "could not convert a review entity to a response: %v", err)
 	}
 
 	return res, nil
@@ -62,7 +65,7 @@ func (s server) Update(ctx context.Context, in *pb.ReviewUpdateRequest) (*pb.Rev
 	ru := entity.ReviewUpdate{ReviewUpdateRequest: in}
 
 	if err := ru.Validate(); err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.InvalidArgument, err.Error())
 	}
 
 	review, err := s.storage.GetByID(ctx, in.ID)
@@ -77,12 +80,29 @@ func (s server) Update(ctx context.Context, in *pb.ReviewUpdateRequest) (*pb.Rev
 	review, err = s.storage.Update(ctx, ru, review)
 
 	if err != nil {
-		return nil, fmt.Errorf("storage could not update a review: %v", err)
+		return nil, status.Errorf(codes.Internal, "storage could not update a review: %v", err)
 	}
 
 	res, err := convert(review)
 	if err != nil {
-		return nil, fmt.Errorf("could not convert reiew entity to response: %v", err)
+		return nil, status.Errorf(codes.Internal, "could not convert a review entity to a response: %v", err)
+	}
+
+	return res, nil
+}
+
+func (s server) Get(ctx context.Context, in *pb.ReviewID) (*pb.ReviewResponse, error) {
+	review, err := s.storage.GetByID(ctx, in.ID)
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, fmt.Sprintf("review with ID %s counlt not be found", in.ID))
+	}
+	if review == nil {
+		return nil, status.Errorf(codes.NotFound, fmt.Sprintf("review with ID %s counlt not be found", in.ID))
+	}
+
+	res, err := convert(review)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "could not convert a review entity to a response: %v", err)
 	}
 
 	return res, nil
