@@ -54,7 +54,7 @@ func init() {
 	RabbitMQ = rabbitMQ{conn: conn, ch: ch, q: q}
 }
 
-func (r rabbitMQ) Listen() (<-chan amqp.Delivery, error) {
+func (r rabbitMQ) Listen() (<-chan []byte, error) {
 	msgs, err := r.ch.Consume(
 		r.q.Name, // queue
 		"",       // consumer
@@ -69,7 +69,20 @@ func (r rabbitMQ) Listen() (<-chan amqp.Delivery, error) {
 		return nil, fmt.Errorf("could not consume a queue %s: %v", queueName, err)
 	}
 
-	return msgs, nil
+	ch := createMessageChannel(msgs)
+
+	return ch, nil
+}
+
+func createMessageChannel(msgs <-chan amqp.Delivery) <-chan []byte {
+	ch := make(chan []byte)
+	go func() {
+		defer close(ch)
+		for d := range msgs {
+			ch <- d.Body
+		}
+	}()
+	return ch
 }
 
 func listenClose(notify chan *amqp.Error, ch *amqp.Channel, conn *amqp.Connection) {

@@ -16,9 +16,9 @@ const (
 	analyzeToneAction = "analyze tone"
 )
 
-func handle(body []byte) error {
+func handle(msg []byte) error {
 	qm := entity.QueueMessage{}
-	err := json.Unmarshal(body, &qm)
+	err := json.Unmarshal(msg, &qm)
 	if err != nil {
 		return fmt.Errorf("could not parse income message: %v", err)
 	}

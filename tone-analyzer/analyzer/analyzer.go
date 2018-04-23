@@ -139,7 +139,7 @@ func (a analyzer) Analyze(content string) (int64, error) {
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(body))
+
 	if err != nil {
 		return 0, fmt.Errorf("could not read body from tone analyzer api response: %v", err)
 	}
