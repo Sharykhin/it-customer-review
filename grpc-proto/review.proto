@@ -6,6 +6,8 @@ service Review {
     rpc Create (ReviewCreateRequest) returns (ReviewResponse) {}
     // Update an existing review
     rpc Update(ReviewUpdateRequest) returns(ReviewResponse) {}
+    // Returns a review by ID
+    rpc Get(ReviewID) returns(ReviewResponse) {}
     // Detect whether server works or not
     rpc Ping(Empty) returns(Pong) {}
 }
@@ -18,6 +20,10 @@ message Empty {
 // Pong simple response
 message Pong {
     string Response = 1;
+}
+
+message ReviewID {
+    string ID = 1;
 }
 
 // ReviewCreateRequest message for creating a new review

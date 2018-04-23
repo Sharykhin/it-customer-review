@@ -11,6 +11,7 @@ type (
 	ServiceProvider interface {
 		Create(ctx context.Context, rr entity.ReviewRequest) (*entity.Review, error)
 		Update(ctx context.Context, ID string, rr entity.ReviewUpdateRequest) (*entity.Review, error)
+		Get(ctx context.Context, ID string) (*entity.Review, error)
 	}
 	// QueueMessageProvider describes funcs that should be implemented to make queue work as expected.
 	QueueMessageProvider interface {

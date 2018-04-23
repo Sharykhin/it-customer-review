@@ -90,6 +90,15 @@ func (ctrl reviewService) Update(ctx context.Context, ID string, rr entity.Revie
 	return r, nil
 }
 
+func (ctrl reviewService) Get(ctx context.Context, ID string) (*entity.Review, error) {
+	res, err := ctrl.client.Get(ctx, &pb.ReviewID{ID: ID})
+	if err != nil {
+		return nil, err
+	}
+	r := convert(res)
+	return r, nil
+}
+
 func convert(res *pb.ReviewResponse) *entity.Review {
 
 	r := entity.Review{

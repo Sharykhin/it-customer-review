@@ -6,7 +6,8 @@ import (
 	"github.com/Sharykhin/it-customer-review/api/util"
 )
 
-func pong(w http.ResponseWriter, r *http.Request) {
+// Pong is a simple live health method
+func Pong(w http.ResponseWriter, r *http.Request) {
 	util.JSON(util.Response{
 		Success: true,
 		Data:    "pong",
