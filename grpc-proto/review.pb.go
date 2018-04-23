@@ -10,7 +10,9 @@ It is generated from these files:
 It has these top-level messages:
 	Empty
 	Pong
-	ReviewRequest
+	ReviewCreateRequest
+	FieldToUpdate
+	ReviewUpdateRequest
 	ReviewResponse
 */
 package review
@@ -35,6 +37,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
+// Empty is some sort if missing input parameter
 type Empty struct {
 }
 
@@ -43,8 +46,9 @@ func (m *Empty) String() string            { return proto.CompactTextString(m) }
 func (*Empty) ProtoMessage()               {}
 func (*Empty) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
+// Pong simple response
 type Pong struct {
-	Response string `protobuf:"bytes,1,opt,name=response" json:"response,omitempty"`
+	Response string `protobuf:"bytes,1,opt,name=Response" json:"Response,omitempty"`
 }
 
 func (m *Pong) Reset()                    { *m = Pong{} }
@@ -59,79 +63,758 @@ func (m *Pong) GetResponse() string {
 	return ""
 }
 
-// Request message for creating a new fail mail
-type ReviewRequest struct {
-	Name      string `protobuf:"bytes,2,opt,name=Name" json:"Name,omitempty"`
-	Email     string `protobuf:"bytes,3,opt,name=Email" json:"Email,omitempty"`
-	Content   string `protobuf:"bytes,4,opt,name=Content" json:"Content,omitempty"`
-	Published bool   `protobuf:"varint,5,opt,name=Published" json:"Published,omitempty"`
-	Score     int64  `protobuf:"varint,6,opt,name=Score" json:"Score,omitempty"`
-	Category  string `protobuf:"bytes,7,opt,name=Category" json:"Category,omitempty"`
+// ReviewCreateRequest message for creating a new review
+type ReviewCreateRequest struct {
+	Name      string `protobuf:"bytes,1,opt,name=Name" json:"Name,omitempty"`
+	Email     string `protobuf:"bytes,2,opt,name=Email" json:"Email,omitempty"`
+	Content   string `protobuf:"bytes,3,opt,name=Content" json:"Content,omitempty"`
+	Published bool   `protobuf:"varint,4,opt,name=Published" json:"Published,omitempty"`
+	// Types that are valid to be assigned to Score:
+	//	*ReviewCreateRequest_ScoreNull
+	//	*ReviewCreateRequest_ScoreValue
+	Score isReviewCreateRequest_Score `protobuf_oneof:"Score"`
+	// Types that are valid to be assigned to Category:
+	//	*ReviewCreateRequest_CategoryNull
+	//	*ReviewCreateRequest_CategoryValue
+	Category isReviewCreateRequest_Category `protobuf_oneof:"Category"`
 }
 
-func (m *ReviewRequest) Reset()                    { *m = ReviewRequest{} }
-func (m *ReviewRequest) String() string            { return proto.CompactTextString(m) }
-func (*ReviewRequest) ProtoMessage()               {}
-func (*ReviewRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
+func (m *ReviewCreateRequest) Reset()                    { *m = ReviewCreateRequest{} }
+func (m *ReviewCreateRequest) String() string            { return proto.CompactTextString(m) }
+func (*ReviewCreateRequest) ProtoMessage()               {}
+func (*ReviewCreateRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
 
-func (m *ReviewRequest) GetName() string {
+type isReviewCreateRequest_Score interface {
+	isReviewCreateRequest_Score()
+}
+type isReviewCreateRequest_Category interface {
+	isReviewCreateRequest_Category()
+}
+
+type ReviewCreateRequest_ScoreNull struct {
+	ScoreNull bool `protobuf:"varint,5,opt,name=score_null,json=scoreNull,oneof"`
+}
+type ReviewCreateRequest_ScoreValue struct {
+	ScoreValue int64 `protobuf:"varint,6,opt,name=score_value,json=scoreValue,oneof"`
+}
+type ReviewCreateRequest_CategoryNull struct {
+	CategoryNull bool `protobuf:"varint,7,opt,name=category_null,json=categoryNull,oneof"`
+}
+type ReviewCreateRequest_CategoryValue struct {
+	CategoryValue string `protobuf:"bytes,8,opt,name=category_value,json=categoryValue,oneof"`
+}
+
+func (*ReviewCreateRequest_ScoreNull) isReviewCreateRequest_Score()        {}
+func (*ReviewCreateRequest_ScoreValue) isReviewCreateRequest_Score()       {}
+func (*ReviewCreateRequest_CategoryNull) isReviewCreateRequest_Category()  {}
+func (*ReviewCreateRequest_CategoryValue) isReviewCreateRequest_Category() {}
+
+func (m *ReviewCreateRequest) GetScore() isReviewCreateRequest_Score {
+	if m != nil {
+		return m.Score
+	}
+	return nil
+}
+func (m *ReviewCreateRequest) GetCategory() isReviewCreateRequest_Category {
+	if m != nil {
+		return m.Category
+	}
+	return nil
+}
+
+func (m *ReviewCreateRequest) GetName() string {
 	if m != nil {
 		return m.Name
 	}
 	return ""
 }
 
-func (m *ReviewRequest) GetEmail() string {
+func (m *ReviewCreateRequest) GetEmail() string {
 	if m != nil {
 		return m.Email
 	}
 	return ""
 }
 
-func (m *ReviewRequest) GetContent() string {
+func (m *ReviewCreateRequest) GetContent() string {
 	if m != nil {
 		return m.Content
 	}
 	return ""
 }
 
-func (m *ReviewRequest) GetPublished() bool {
+func (m *ReviewCreateRequest) GetPublished() bool {
 	if m != nil {
 		return m.Published
 	}
 	return false
 }
 
-func (m *ReviewRequest) GetScore() int64 {
-	if m != nil {
-		return m.Score
+func (m *ReviewCreateRequest) GetScoreNull() bool {
+	if x, ok := m.GetScore().(*ReviewCreateRequest_ScoreNull); ok {
+		return x.ScoreNull
+	}
+	return false
+}
+
+func (m *ReviewCreateRequest) GetScoreValue() int64 {
+	if x, ok := m.GetScore().(*ReviewCreateRequest_ScoreValue); ok {
+		return x.ScoreValue
 	}
 	return 0
 }
 
-func (m *ReviewRequest) GetCategory() string {
-	if m != nil {
-		return m.Category
+func (m *ReviewCreateRequest) GetCategoryNull() bool {
+	if x, ok := m.GetCategory().(*ReviewCreateRequest_CategoryNull); ok {
+		return x.CategoryNull
+	}
+	return false
+}
+
+func (m *ReviewCreateRequest) GetCategoryValue() string {
+	if x, ok := m.GetCategory().(*ReviewCreateRequest_CategoryValue); ok {
+		return x.CategoryValue
 	}
 	return ""
 }
 
-// Response of fail mail
+// XXX_OneofFuncs is for the internal use of the proto package.
+func (*ReviewCreateRequest) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
+	return _ReviewCreateRequest_OneofMarshaler, _ReviewCreateRequest_OneofUnmarshaler, _ReviewCreateRequest_OneofSizer, []interface{}{
+		(*ReviewCreateRequest_ScoreNull)(nil),
+		(*ReviewCreateRequest_ScoreValue)(nil),
+		(*ReviewCreateRequest_CategoryNull)(nil),
+		(*ReviewCreateRequest_CategoryValue)(nil),
+	}
+}
+
+func _ReviewCreateRequest_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
+	m := msg.(*ReviewCreateRequest)
+	// Score
+	switch x := m.Score.(type) {
+	case *ReviewCreateRequest_ScoreNull:
+		t := uint64(0)
+		if x.ScoreNull {
+			t = 1
+		}
+		b.EncodeVarint(5<<3 | proto.WireVarint)
+		b.EncodeVarint(t)
+	case *ReviewCreateRequest_ScoreValue:
+		b.EncodeVarint(6<<3 | proto.WireVarint)
+		b.EncodeVarint(uint64(x.ScoreValue))
+	case nil:
+	default:
+		return fmt.Errorf("ReviewCreateRequest.Score has unexpected type %T", x)
+	}
+	// Category
+	switch x := m.Category.(type) {
+	case *ReviewCreateRequest_CategoryNull:
+		t := uint64(0)
+		if x.CategoryNull {
+			t = 1
+		}
+		b.EncodeVarint(7<<3 | proto.WireVarint)
+		b.EncodeVarint(t)
+	case *ReviewCreateRequest_CategoryValue:
+		b.EncodeVarint(8<<3 | proto.WireBytes)
+		b.EncodeStringBytes(x.CategoryValue)
+	case nil:
+	default:
+		return fmt.Errorf("ReviewCreateRequest.Category has unexpected type %T", x)
+	}
+	return nil
+}
+
+func _ReviewCreateRequest_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
+	m := msg.(*ReviewCreateRequest)
+	switch tag {
+	case 5: // Score.score_null
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Score = &ReviewCreateRequest_ScoreNull{x != 0}
+		return true, err
+	case 6: // Score.score_value
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Score = &ReviewCreateRequest_ScoreValue{int64(x)}
+		return true, err
+	case 7: // Category.category_null
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Category = &ReviewCreateRequest_CategoryNull{x != 0}
+		return true, err
+	case 8: // Category.category_value
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeStringBytes()
+		m.Category = &ReviewCreateRequest_CategoryValue{x}
+		return true, err
+	default:
+		return false, nil
+	}
+}
+
+func _ReviewCreateRequest_OneofSizer(msg proto.Message) (n int) {
+	m := msg.(*ReviewCreateRequest)
+	// Score
+	switch x := m.Score.(type) {
+	case *ReviewCreateRequest_ScoreNull:
+		n += proto.SizeVarint(5<<3 | proto.WireVarint)
+		n += 1
+	case *ReviewCreateRequest_ScoreValue:
+		n += proto.SizeVarint(6<<3 | proto.WireVarint)
+		n += proto.SizeVarint(uint64(x.ScoreValue))
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	// Category
+	switch x := m.Category.(type) {
+	case *ReviewCreateRequest_CategoryNull:
+		n += proto.SizeVarint(7<<3 | proto.WireVarint)
+		n += 1
+	case *ReviewCreateRequest_CategoryValue:
+		n += proto.SizeVarint(8<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.CategoryValue)))
+		n += len(x.CategoryValue)
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	return n
+}
+
+type FieldToUpdate struct {
+	// Types that are valid to be assigned to Name:
+	//	*FieldToUpdate_NameNull
+	//	*FieldToUpdate_NameValue
+	Name isFieldToUpdate_Name `protobuf_oneof:"Name"`
+	// Types that are valid to be assigned to Content:
+	//	*FieldToUpdate_ContentNull
+	//	*FieldToUpdate_ContentValue
+	Content isFieldToUpdate_Content `protobuf_oneof:"Content"`
+	// Types that are valid to be assigned to Published:
+	//	*FieldToUpdate_PublishedNull
+	//	*FieldToUpdate_PublishedValue
+	Published isFieldToUpdate_Published `protobuf_oneof:"Published"`
+	// Types that are valid to be assigned to Score:
+	//	*FieldToUpdate_ScoreNull
+	//	*FieldToUpdate_ScoreValue
+	Score isFieldToUpdate_Score `protobuf_oneof:"Score"`
+	// Types that are valid to be assigned to Category:
+	//	*FieldToUpdate_CategoryNull
+	//	*FieldToUpdate_CategoryValue
+	Category isFieldToUpdate_Category `protobuf_oneof:"Category"`
+}
+
+func (m *FieldToUpdate) Reset()                    { *m = FieldToUpdate{} }
+func (m *FieldToUpdate) String() string            { return proto.CompactTextString(m) }
+func (*FieldToUpdate) ProtoMessage()               {}
+func (*FieldToUpdate) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
+
+type isFieldToUpdate_Name interface {
+	isFieldToUpdate_Name()
+}
+type isFieldToUpdate_Content interface {
+	isFieldToUpdate_Content()
+}
+type isFieldToUpdate_Published interface {
+	isFieldToUpdate_Published()
+}
+type isFieldToUpdate_Score interface {
+	isFieldToUpdate_Score()
+}
+type isFieldToUpdate_Category interface {
+	isFieldToUpdate_Category()
+}
+
+type FieldToUpdate_NameNull struct {
+	NameNull bool `protobuf:"varint,1,opt,name=name_null,json=nameNull,oneof"`
+}
+type FieldToUpdate_NameValue struct {
+	NameValue string `protobuf:"bytes,2,opt,name=name_value,json=nameValue,oneof"`
+}
+type FieldToUpdate_ContentNull struct {
+	ContentNull bool `protobuf:"varint,3,opt,name=content_null,json=contentNull,oneof"`
+}
+type FieldToUpdate_ContentValue struct {
+	ContentValue string `protobuf:"bytes,4,opt,name=content_value,json=contentValue,oneof"`
+}
+type FieldToUpdate_PublishedNull struct {
+	PublishedNull bool `protobuf:"varint,5,opt,name=published_null,json=publishedNull,oneof"`
+}
+type FieldToUpdate_PublishedValue struct {
+	PublishedValue bool `protobuf:"varint,6,opt,name=published_value,json=publishedValue,oneof"`
+}
+type FieldToUpdate_ScoreNull struct {
+	ScoreNull bool `protobuf:"varint,7,opt,name=score_null,json=scoreNull,oneof"`
+}
+type FieldToUpdate_ScoreValue struct {
+	ScoreValue int64 `protobuf:"varint,8,opt,name=score_value,json=scoreValue,oneof"`
+}
+type FieldToUpdate_CategoryNull struct {
+	CategoryNull bool `protobuf:"varint,9,opt,name=category_null,json=categoryNull,oneof"`
+}
+type FieldToUpdate_CategoryValue struct {
+	CategoryValue string `protobuf:"bytes,10,opt,name=category_value,json=categoryValue,oneof"`
+}
+
+func (*FieldToUpdate_NameNull) isFieldToUpdate_Name()            {}
+func (*FieldToUpdate_NameValue) isFieldToUpdate_Name()           {}
+func (*FieldToUpdate_ContentNull) isFieldToUpdate_Content()      {}
+func (*FieldToUpdate_ContentValue) isFieldToUpdate_Content()     {}
+func (*FieldToUpdate_PublishedNull) isFieldToUpdate_Published()  {}
+func (*FieldToUpdate_PublishedValue) isFieldToUpdate_Published() {}
+func (*FieldToUpdate_ScoreNull) isFieldToUpdate_Score()          {}
+func (*FieldToUpdate_ScoreValue) isFieldToUpdate_Score()         {}
+func (*FieldToUpdate_CategoryNull) isFieldToUpdate_Category()    {}
+func (*FieldToUpdate_CategoryValue) isFieldToUpdate_Category()   {}
+
+func (m *FieldToUpdate) GetName() isFieldToUpdate_Name {
+	if m != nil {
+		return m.Name
+	}
+	return nil
+}
+func (m *FieldToUpdate) GetContent() isFieldToUpdate_Content {
+	if m != nil {
+		return m.Content
+	}
+	return nil
+}
+func (m *FieldToUpdate) GetPublished() isFieldToUpdate_Published {
+	if m != nil {
+		return m.Published
+	}
+	return nil
+}
+func (m *FieldToUpdate) GetScore() isFieldToUpdate_Score {
+	if m != nil {
+		return m.Score
+	}
+	return nil
+}
+func (m *FieldToUpdate) GetCategory() isFieldToUpdate_Category {
+	if m != nil {
+		return m.Category
+	}
+	return nil
+}
+
+func (m *FieldToUpdate) GetNameNull() bool {
+	if x, ok := m.GetName().(*FieldToUpdate_NameNull); ok {
+		return x.NameNull
+	}
+	return false
+}
+
+func (m *FieldToUpdate) GetNameValue() string {
+	if x, ok := m.GetName().(*FieldToUpdate_NameValue); ok {
+		return x.NameValue
+	}
+	return ""
+}
+
+func (m *FieldToUpdate) GetContentNull() bool {
+	if x, ok := m.GetContent().(*FieldToUpdate_ContentNull); ok {
+		return x.ContentNull
+	}
+	return false
+}
+
+func (m *FieldToUpdate) GetContentValue() string {
+	if x, ok := m.GetContent().(*FieldToUpdate_ContentValue); ok {
+		return x.ContentValue
+	}
+	return ""
+}
+
+func (m *FieldToUpdate) GetPublishedNull() bool {
+	if x, ok := m.GetPublished().(*FieldToUpdate_PublishedNull); ok {
+		return x.PublishedNull
+	}
+	return false
+}
+
+func (m *FieldToUpdate) GetPublishedValue() bool {
+	if x, ok := m.GetPublished().(*FieldToUpdate_PublishedValue); ok {
+		return x.PublishedValue
+	}
+	return false
+}
+
+func (m *FieldToUpdate) GetScoreNull() bool {
+	if x, ok := m.GetScore().(*FieldToUpdate_ScoreNull); ok {
+		return x.ScoreNull
+	}
+	return false
+}
+
+func (m *FieldToUpdate) GetScoreValue() int64 {
+	if x, ok := m.GetScore().(*FieldToUpdate_ScoreValue); ok {
+		return x.ScoreValue
+	}
+	return 0
+}
+
+func (m *FieldToUpdate) GetCategoryNull() bool {
+	if x, ok := m.GetCategory().(*FieldToUpdate_CategoryNull); ok {
+		return x.CategoryNull
+	}
+	return false
+}
+
+func (m *FieldToUpdate) GetCategoryValue() string {
+	if x, ok := m.GetCategory().(*FieldToUpdate_CategoryValue); ok {
+		return x.CategoryValue
+	}
+	return ""
+}
+
+// XXX_OneofFuncs is for the internal use of the proto package.
+func (*FieldToUpdate) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
+	return _FieldToUpdate_OneofMarshaler, _FieldToUpdate_OneofUnmarshaler, _FieldToUpdate_OneofSizer, []interface{}{
+		(*FieldToUpdate_NameNull)(nil),
+		(*FieldToUpdate_NameValue)(nil),
+		(*FieldToUpdate_ContentNull)(nil),
+		(*FieldToUpdate_ContentValue)(nil),
+		(*FieldToUpdate_PublishedNull)(nil),
+		(*FieldToUpdate_PublishedValue)(nil),
+		(*FieldToUpdate_ScoreNull)(nil),
+		(*FieldToUpdate_ScoreValue)(nil),
+		(*FieldToUpdate_CategoryNull)(nil),
+		(*FieldToUpdate_CategoryValue)(nil),
+	}
+}
+
+func _FieldToUpdate_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
+	m := msg.(*FieldToUpdate)
+	// Name
+	switch x := m.Name.(type) {
+	case *FieldToUpdate_NameNull:
+		t := uint64(0)
+		if x.NameNull {
+			t = 1
+		}
+		b.EncodeVarint(1<<3 | proto.WireVarint)
+		b.EncodeVarint(t)
+	case *FieldToUpdate_NameValue:
+		b.EncodeVarint(2<<3 | proto.WireBytes)
+		b.EncodeStringBytes(x.NameValue)
+	case nil:
+	default:
+		return fmt.Errorf("FieldToUpdate.Name has unexpected type %T", x)
+	}
+	// Content
+	switch x := m.Content.(type) {
+	case *FieldToUpdate_ContentNull:
+		t := uint64(0)
+		if x.ContentNull {
+			t = 1
+		}
+		b.EncodeVarint(3<<3 | proto.WireVarint)
+		b.EncodeVarint(t)
+	case *FieldToUpdate_ContentValue:
+		b.EncodeVarint(4<<3 | proto.WireBytes)
+		b.EncodeStringBytes(x.ContentValue)
+	case nil:
+	default:
+		return fmt.Errorf("FieldToUpdate.Content has unexpected type %T", x)
+	}
+	// Published
+	switch x := m.Published.(type) {
+	case *FieldToUpdate_PublishedNull:
+		t := uint64(0)
+		if x.PublishedNull {
+			t = 1
+		}
+		b.EncodeVarint(5<<3 | proto.WireVarint)
+		b.EncodeVarint(t)
+	case *FieldToUpdate_PublishedValue:
+		t := uint64(0)
+		if x.PublishedValue {
+			t = 1
+		}
+		b.EncodeVarint(6<<3 | proto.WireVarint)
+		b.EncodeVarint(t)
+	case nil:
+	default:
+		return fmt.Errorf("FieldToUpdate.Published has unexpected type %T", x)
+	}
+	// Score
+	switch x := m.Score.(type) {
+	case *FieldToUpdate_ScoreNull:
+		t := uint64(0)
+		if x.ScoreNull {
+			t = 1
+		}
+		b.EncodeVarint(7<<3 | proto.WireVarint)
+		b.EncodeVarint(t)
+	case *FieldToUpdate_ScoreValue:
+		b.EncodeVarint(8<<3 | proto.WireVarint)
+		b.EncodeVarint(uint64(x.ScoreValue))
+	case nil:
+	default:
+		return fmt.Errorf("FieldToUpdate.Score has unexpected type %T", x)
+	}
+	// Category
+	switch x := m.Category.(type) {
+	case *FieldToUpdate_CategoryNull:
+		t := uint64(0)
+		if x.CategoryNull {
+			t = 1
+		}
+		b.EncodeVarint(9<<3 | proto.WireVarint)
+		b.EncodeVarint(t)
+	case *FieldToUpdate_CategoryValue:
+		b.EncodeVarint(10<<3 | proto.WireBytes)
+		b.EncodeStringBytes(x.CategoryValue)
+	case nil:
+	default:
+		return fmt.Errorf("FieldToUpdate.Category has unexpected type %T", x)
+	}
+	return nil
+}
+
+func _FieldToUpdate_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
+	m := msg.(*FieldToUpdate)
+	switch tag {
+	case 1: // Name.name_null
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Name = &FieldToUpdate_NameNull{x != 0}
+		return true, err
+	case 2: // Name.name_value
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeStringBytes()
+		m.Name = &FieldToUpdate_NameValue{x}
+		return true, err
+	case 3: // Content.content_null
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Content = &FieldToUpdate_ContentNull{x != 0}
+		return true, err
+	case 4: // Content.content_value
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeStringBytes()
+		m.Content = &FieldToUpdate_ContentValue{x}
+		return true, err
+	case 5: // Published.published_null
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Published = &FieldToUpdate_PublishedNull{x != 0}
+		return true, err
+	case 6: // Published.published_value
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Published = &FieldToUpdate_PublishedValue{x != 0}
+		return true, err
+	case 7: // Score.score_null
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Score = &FieldToUpdate_ScoreNull{x != 0}
+		return true, err
+	case 8: // Score.score_value
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Score = &FieldToUpdate_ScoreValue{int64(x)}
+		return true, err
+	case 9: // Category.category_null
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Category = &FieldToUpdate_CategoryNull{x != 0}
+		return true, err
+	case 10: // Category.category_value
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeStringBytes()
+		m.Category = &FieldToUpdate_CategoryValue{x}
+		return true, err
+	default:
+		return false, nil
+	}
+}
+
+func _FieldToUpdate_OneofSizer(msg proto.Message) (n int) {
+	m := msg.(*FieldToUpdate)
+	// Name
+	switch x := m.Name.(type) {
+	case *FieldToUpdate_NameNull:
+		n += proto.SizeVarint(1<<3 | proto.WireVarint)
+		n += 1
+	case *FieldToUpdate_NameValue:
+		n += proto.SizeVarint(2<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.NameValue)))
+		n += len(x.NameValue)
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	// Content
+	switch x := m.Content.(type) {
+	case *FieldToUpdate_ContentNull:
+		n += proto.SizeVarint(3<<3 | proto.WireVarint)
+		n += 1
+	case *FieldToUpdate_ContentValue:
+		n += proto.SizeVarint(4<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.ContentValue)))
+		n += len(x.ContentValue)
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	// Published
+	switch x := m.Published.(type) {
+	case *FieldToUpdate_PublishedNull:
+		n += proto.SizeVarint(5<<3 | proto.WireVarint)
+		n += 1
+	case *FieldToUpdate_PublishedValue:
+		n += proto.SizeVarint(6<<3 | proto.WireVarint)
+		n += 1
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	// Score
+	switch x := m.Score.(type) {
+	case *FieldToUpdate_ScoreNull:
+		n += proto.SizeVarint(7<<3 | proto.WireVarint)
+		n += 1
+	case *FieldToUpdate_ScoreValue:
+		n += proto.SizeVarint(8<<3 | proto.WireVarint)
+		n += proto.SizeVarint(uint64(x.ScoreValue))
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	// Category
+	switch x := m.Category.(type) {
+	case *FieldToUpdate_CategoryNull:
+		n += proto.SizeVarint(9<<3 | proto.WireVarint)
+		n += 1
+	case *FieldToUpdate_CategoryValue:
+		n += proto.SizeVarint(10<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.CategoryValue)))
+		n += len(x.CategoryValue)
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	return n
+}
+
+// ReviewUpdateRequest for updating an existing review
+type ReviewUpdateRequest struct {
+	ID             string         `protobuf:"bytes,1,opt,name=ID" json:"ID,omitempty"`
+	FieldsToUpdate *FieldToUpdate `protobuf:"bytes,2,opt,name=fields_to_update,json=fieldsToUpdate" json:"fields_to_update,omitempty"`
+}
+
+func (m *ReviewUpdateRequest) Reset()                    { *m = ReviewUpdateRequest{} }
+func (m *ReviewUpdateRequest) String() string            { return proto.CompactTextString(m) }
+func (*ReviewUpdateRequest) ProtoMessage()               {}
+func (*ReviewUpdateRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
+
+func (m *ReviewUpdateRequest) GetID() string {
+	if m != nil {
+		return m.ID
+	}
+	return ""
+}
+
+func (m *ReviewUpdateRequest) GetFieldsToUpdate() *FieldToUpdate {
+	if m != nil {
+		return m.FieldsToUpdate
+	}
+	return nil
+}
+
+// Response of a review
 type ReviewResponse struct {
 	ID        string `protobuf:"bytes,1,opt,name=ID" json:"ID,omitempty"`
 	Name      string `protobuf:"bytes,2,opt,name=Name" json:"Name,omitempty"`
 	Email     string `protobuf:"bytes,3,opt,name=Email" json:"Email,omitempty"`
 	Content   string `protobuf:"bytes,4,opt,name=Content" json:"Content,omitempty"`
 	Published bool   `protobuf:"varint,5,opt,name=Published" json:"Published,omitempty"`
-	Score     int64  `protobuf:"varint,6,opt,name=Score" json:"Score,omitempty"`
-	Category  string `protobuf:"bytes,7,opt,name=Category" json:"Category,omitempty"`
-	CreatedAt string `protobuf:"bytes,8,opt,name=CreatedAt" json:"CreatedAt,omitempty"`
+	// Types that are valid to be assigned to Score:
+	//	*ReviewResponse_ScoreNull
+	//	*ReviewResponse_ScoreValue
+	Score isReviewResponse_Score `protobuf_oneof:"Score"`
+	// Types that are valid to be assigned to Category:
+	//	*ReviewResponse_CategoryNull
+	//	*ReviewResponse_CategoryValue
+	Category  isReviewResponse_Category `protobuf_oneof:"Category"`
+	CreatedAt string                    `protobuf:"bytes,10,opt,name=CreatedAt" json:"CreatedAt,omitempty"`
+	UpdatedAt string                    `protobuf:"bytes,11,opt,name=UpdatedAt" json:"UpdatedAt,omitempty"`
 }
 
 func (m *ReviewResponse) Reset()                    { *m = ReviewResponse{} }
 func (m *ReviewResponse) String() string            { return proto.CompactTextString(m) }
 func (*ReviewResponse) ProtoMessage()               {}
-func (*ReviewResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
+func (*ReviewResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
+
+type isReviewResponse_Score interface {
+	isReviewResponse_Score()
+}
+type isReviewResponse_Category interface {
+	isReviewResponse_Category()
+}
+
+type ReviewResponse_ScoreNull struct {
+	ScoreNull bool `protobuf:"varint,6,opt,name=score_null,json=scoreNull,oneof"`
+}
+type ReviewResponse_ScoreValue struct {
+	ScoreValue int64 `protobuf:"varint,7,opt,name=score_value,json=scoreValue,oneof"`
+}
+type ReviewResponse_CategoryNull struct {
+	CategoryNull bool `protobuf:"varint,8,opt,name=category_null,json=categoryNull,oneof"`
+}
+type ReviewResponse_CategoryValue struct {
+	CategoryValue string `protobuf:"bytes,9,opt,name=category_value,json=categoryValue,oneof"`
+}
+
+func (*ReviewResponse_ScoreNull) isReviewResponse_Score()        {}
+func (*ReviewResponse_ScoreValue) isReviewResponse_Score()       {}
+func (*ReviewResponse_CategoryNull) isReviewResponse_Category()  {}
+func (*ReviewResponse_CategoryValue) isReviewResponse_Category() {}
+
+func (m *ReviewResponse) GetScore() isReviewResponse_Score {
+	if m != nil {
+		return m.Score
+	}
+	return nil
+}
+func (m *ReviewResponse) GetCategory() isReviewResponse_Category {
+	if m != nil {
+		return m.Category
+	}
+	return nil
+}
 
 func (m *ReviewResponse) GetID() string {
 	if m != nil {
@@ -168,16 +851,30 @@ func (m *ReviewResponse) GetPublished() bool {
 	return false
 }
 
-func (m *ReviewResponse) GetScore() int64 {
-	if m != nil {
-		return m.Score
+func (m *ReviewResponse) GetScoreNull() bool {
+	if x, ok := m.GetScore().(*ReviewResponse_ScoreNull); ok {
+		return x.ScoreNull
+	}
+	return false
+}
+
+func (m *ReviewResponse) GetScoreValue() int64 {
+	if x, ok := m.GetScore().(*ReviewResponse_ScoreValue); ok {
+		return x.ScoreValue
 	}
 	return 0
 }
 
-func (m *ReviewResponse) GetCategory() string {
-	if m != nil {
-		return m.Category
+func (m *ReviewResponse) GetCategoryNull() bool {
+	if x, ok := m.GetCategory().(*ReviewResponse_CategoryNull); ok {
+		return x.CategoryNull
+	}
+	return false
+}
+
+func (m *ReviewResponse) GetCategoryValue() string {
+	if x, ok := m.GetCategory().(*ReviewResponse_CategoryValue); ok {
+		return x.CategoryValue
 	}
 	return ""
 }
@@ -189,10 +886,132 @@ func (m *ReviewResponse) GetCreatedAt() string {
 	return ""
 }
 
+func (m *ReviewResponse) GetUpdatedAt() string {
+	if m != nil {
+		return m.UpdatedAt
+	}
+	return ""
+}
+
+// XXX_OneofFuncs is for the internal use of the proto package.
+func (*ReviewResponse) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
+	return _ReviewResponse_OneofMarshaler, _ReviewResponse_OneofUnmarshaler, _ReviewResponse_OneofSizer, []interface{}{
+		(*ReviewResponse_ScoreNull)(nil),
+		(*ReviewResponse_ScoreValue)(nil),
+		(*ReviewResponse_CategoryNull)(nil),
+		(*ReviewResponse_CategoryValue)(nil),
+	}
+}
+
+func _ReviewResponse_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
+	m := msg.(*ReviewResponse)
+	// Score
+	switch x := m.Score.(type) {
+	case *ReviewResponse_ScoreNull:
+		t := uint64(0)
+		if x.ScoreNull {
+			t = 1
+		}
+		b.EncodeVarint(6<<3 | proto.WireVarint)
+		b.EncodeVarint(t)
+	case *ReviewResponse_ScoreValue:
+		b.EncodeVarint(7<<3 | proto.WireVarint)
+		b.EncodeVarint(uint64(x.ScoreValue))
+	case nil:
+	default:
+		return fmt.Errorf("ReviewResponse.Score has unexpected type %T", x)
+	}
+	// Category
+	switch x := m.Category.(type) {
+	case *ReviewResponse_CategoryNull:
+		t := uint64(0)
+		if x.CategoryNull {
+			t = 1
+		}
+		b.EncodeVarint(8<<3 | proto.WireVarint)
+		b.EncodeVarint(t)
+	case *ReviewResponse_CategoryValue:
+		b.EncodeVarint(9<<3 | proto.WireBytes)
+		b.EncodeStringBytes(x.CategoryValue)
+	case nil:
+	default:
+		return fmt.Errorf("ReviewResponse.Category has unexpected type %T", x)
+	}
+	return nil
+}
+
+func _ReviewResponse_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
+	m := msg.(*ReviewResponse)
+	switch tag {
+	case 6: // Score.score_null
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Score = &ReviewResponse_ScoreNull{x != 0}
+		return true, err
+	case 7: // Score.score_value
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Score = &ReviewResponse_ScoreValue{int64(x)}
+		return true, err
+	case 8: // Category.category_null
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.Category = &ReviewResponse_CategoryNull{x != 0}
+		return true, err
+	case 9: // Category.category_value
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeStringBytes()
+		m.Category = &ReviewResponse_CategoryValue{x}
+		return true, err
+	default:
+		return false, nil
+	}
+}
+
+func _ReviewResponse_OneofSizer(msg proto.Message) (n int) {
+	m := msg.(*ReviewResponse)
+	// Score
+	switch x := m.Score.(type) {
+	case *ReviewResponse_ScoreNull:
+		n += proto.SizeVarint(6<<3 | proto.WireVarint)
+		n += 1
+	case *ReviewResponse_ScoreValue:
+		n += proto.SizeVarint(7<<3 | proto.WireVarint)
+		n += proto.SizeVarint(uint64(x.ScoreValue))
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	// Category
+	switch x := m.Category.(type) {
+	case *ReviewResponse_CategoryNull:
+		n += proto.SizeVarint(8<<3 | proto.WireVarint)
+		n += 1
+	case *ReviewResponse_CategoryValue:
+		n += proto.SizeVarint(9<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(len(x.CategoryValue)))
+		n += len(x.CategoryValue)
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	return n
+}
+
 func init() {
 	proto.RegisterType((*Empty)(nil), "review.Empty")
 	proto.RegisterType((*Pong)(nil), "review.Pong")
-	proto.RegisterType((*ReviewRequest)(nil), "review.ReviewRequest")
+	proto.RegisterType((*ReviewCreateRequest)(nil), "review.ReviewCreateRequest")
+	proto.RegisterType((*FieldToUpdate)(nil), "review.FieldToUpdate")
+	proto.RegisterType((*ReviewUpdateRequest)(nil), "review.ReviewUpdateRequest")
 	proto.RegisterType((*ReviewResponse)(nil), "review.ReviewResponse")
 }
 
@@ -207,8 +1026,11 @@ const _ = grpc.SupportPackageIsVersion4
 // Client API for Review service
 
 type ReviewClient interface {
-	Create(ctx context.Context, in *ReviewRequest, opts ...grpc.CallOption) (*ReviewResponse, error)
-	Update(ctx context.Context, in *ReviewRequest, opts ...grpc.CallOption) (*ReviewResponse, error)
+	// Create a new review
+	Create(ctx context.Context, in *ReviewCreateRequest, opts ...grpc.CallOption) (*ReviewResponse, error)
+	// Update an existing review
+	Update(ctx context.Context, in *ReviewUpdateRequest, opts ...grpc.CallOption) (*ReviewResponse, error)
+	// Detect whether server works or not
 	Ping(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Pong, error)
 }
 
@@ -220,7 +1042,7 @@ func NewReviewClient(cc *grpc.ClientConn) ReviewClient {
 	return &reviewClient{cc}
 }
 
-func (c *reviewClient) Create(ctx context.Context, in *ReviewRequest, opts ...grpc.CallOption) (*ReviewResponse, error) {
+func (c *reviewClient) Create(ctx context.Context, in *ReviewCreateRequest, opts ...grpc.CallOption) (*ReviewResponse, error) {
 	out := new(ReviewResponse)
 	err := grpc.Invoke(ctx, "/review.Review/Create", in, out, c.cc, opts...)
 	if err != nil {
@@ -229,7 +1051,7 @@ func (c *reviewClient) Create(ctx context.Context, in *ReviewRequest, opts ...gr
 	return out, nil
 }
 
-func (c *reviewClient) Update(ctx context.Context, in *ReviewRequest, opts ...grpc.CallOption) (*ReviewResponse, error) {
+func (c *reviewClient) Update(ctx context.Context, in *ReviewUpdateRequest, opts ...grpc.CallOption) (*ReviewResponse, error) {
 	out := new(ReviewResponse)
 	err := grpc.Invoke(ctx, "/review.Review/Update", in, out, c.cc, opts...)
 	if err != nil {
@@ -250,8 +1072,11 @@ func (c *reviewClient) Ping(ctx context.Context, in *Empty, opts ...grpc.CallOpt
 // Server API for Review service
 
 type ReviewServer interface {
-	Create(context.Context, *ReviewRequest) (*ReviewResponse, error)
-	Update(context.Context, *ReviewRequest) (*ReviewResponse, error)
+	// Create a new review
+	Create(context.Context, *ReviewCreateRequest) (*ReviewResponse, error)
+	// Update an existing review
+	Update(context.Context, *ReviewUpdateRequest) (*ReviewResponse, error)
+	// Detect whether server works or not
 	Ping(context.Context, *Empty) (*Pong, error)
 }
 
@@ -260,7 +1085,7 @@ func RegisterReviewServer(s *grpc.Server, srv ReviewServer) {
 }
 
 func _Review_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReviewRequest)
+	in := new(ReviewCreateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -272,13 +1097,13 @@ func _Review_Create_Handler(srv interface{}, ctx context.Context, dec func(inter
 		FullMethod: "/review.Review/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReviewServer).Create(ctx, req.(*ReviewRequest))
+		return srv.(ReviewServer).Create(ctx, req.(*ReviewCreateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Review_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReviewRequest)
+	in := new(ReviewUpdateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -290,7 +1115,7 @@ func _Review_Update_Handler(srv interface{}, ctx context.Context, dec func(inter
 		FullMethod: "/review.Review/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReviewServer).Update(ctx, req.(*ReviewRequest))
+		return srv.(ReviewServer).Update(ctx, req.(*ReviewUpdateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -337,24 +1162,41 @@ var _Review_serviceDesc = grpc.ServiceDesc{
 func init() { proto.RegisterFile("review.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 291 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x92, 0xc1, 0x4a, 0xfb, 0x40,
-	0x10, 0xc6, 0xbb, 0x6d, 0x9a, 0xa4, 0x43, 0xdb, 0xc3, 0xf0, 0xff, 0xcb, 0x12, 0x3c, 0x84, 0x05,
-	0x21, 0xa7, 0x1e, 0xf4, 0xe4, 0x51, 0x52, 0x0f, 0xbd, 0x48, 0x88, 0xf8, 0x00, 0xa9, 0x19, 0x62,
-	0xa0, 0xcd, 0xc6, 0xcd, 0x56, 0xe9, 0xf3, 0x88, 0x2f, 0xe4, 0x13, 0xc9, 0xee, 0x26, 0x16, 0x3d,
-	0x7a, 0xf2, 0xb6, 0xbf, 0x6f, 0x67, 0x86, 0x6f, 0x98, 0x0f, 0xe6, 0x8a, 0x5e, 0x6a, 0x7a, 0x5d,
-	0xb5, 0x4a, 0x6a, 0x89, 0xbe, 0x23, 0x11, 0xc0, 0xf4, 0x76, 0xdf, 0xea, 0xa3, 0x10, 0xe0, 0x65,
-	0xb2, 0xa9, 0x30, 0x82, 0x50, 0x51, 0xd7, 0xca, 0xa6, 0x23, 0xce, 0x62, 0x96, 0xcc, 0xf2, 0x2f,
-	0x16, 0x6f, 0x0c, 0x16, 0xb9, 0xed, 0xcb, 0xe9, 0xf9, 0x40, 0x9d, 0x46, 0x04, 0xef, 0xae, 0xd8,
-	0x13, 0x1f, 0xdb, 0x4a, 0xfb, 0xc6, 0x7f, 0x66, 0x64, 0x51, 0xef, 0xf8, 0xc4, 0x8a, 0x0e, 0x90,
-	0x43, 0x90, 0xca, 0x46, 0x53, 0xa3, 0xb9, 0x67, 0xf5, 0x01, 0xf1, 0x1c, 0x66, 0xd9, 0x61, 0xbb,
-	0xab, 0xbb, 0x27, 0x2a, 0xf9, 0x34, 0x66, 0x49, 0x98, 0x9f, 0x04, 0x33, 0xed, 0xfe, 0x51, 0x2a,
-	0xe2, 0x7e, 0xcc, 0x92, 0x49, 0xee, 0xc0, 0xb8, 0x4c, 0x0b, 0x4d, 0x95, 0x54, 0x47, 0x1e, 0x38,
-	0x97, 0x03, 0x8b, 0x0f, 0x06, 0xcb, 0xc1, 0xa5, 0x33, 0x8e, 0x4b, 0x18, 0x6f, 0xd6, 0xfd, 0x3a,
-	0xe3, 0xcd, 0xfa, 0x2f, 0xda, 0x36, 0xf3, 0x52, 0x45, 0x85, 0xa6, 0xf2, 0x46, 0xf3, 0xd0, 0x7e,
-	0x9e, 0x84, 0xcb, 0x77, 0x06, 0xbe, 0x5b, 0x0a, 0xaf, 0xc1, 0x77, 0x3a, 0xfe, 0x5f, 0xf5, 0x37,
-	0xfd, 0x76, 0x94, 0xe8, 0xec, 0xa7, 0xdc, 0x9f, 0x6f, 0x64, 0x5a, 0x1f, 0xda, 0xf2, 0x57, 0xad,
-	0x17, 0xe0, 0x65, 0x75, 0x53, 0xe1, 0x62, 0xa8, 0xb0, 0xb1, 0x89, 0xe6, 0x03, 0x9a, 0xf0, 0x88,
-	0xd1, 0xd6, 0xb7, 0xf1, 0xba, 0xfa, 0x0c, 0x00, 0x00, 0xff, 0xff, 0xd3, 0xcd, 0x47, 0x62, 0x6e,
-	0x02, 0x00, 0x00,
+	// 571 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0xdb, 0x6e, 0xd3, 0x40,
+	0x10, 0x8d, 0x2f, 0x71, 0xec, 0xc9, 0x05, 0xb4, 0x5c, 0x64, 0x05, 0x50, 0x83, 0x51, 0xd5, 0xf0,
+	0xd2, 0x87, 0xf2, 0x01, 0x15, 0x49, 0x41, 0xe9, 0x4b, 0x15, 0x2d, 0x97, 0xd7, 0xc8, 0x4d, 0xb6,
+	0x21, 0x92, 0x63, 0x87, 0x78, 0x5d, 0xd4, 0xbf, 0xe1, 0x17, 0x78, 0xe3, 0x8f, 0xf8, 0x0d, 0xb4,
+	0x33, 0xbb, 0x4e, 0x53, 0x8c, 0xdb, 0x37, 0xef, 0x99, 0xd9, 0xb3, 0xe3, 0x39, 0x73, 0x06, 0x3a,
+	0x5b, 0x71, 0xbd, 0x12, 0x3f, 0x8e, 0x37, 0xdb, 0x4c, 0x66, 0xcc, 0xa3, 0x53, 0xd4, 0x82, 0xe6,
+	0x87, 0xf5, 0x46, 0xde, 0x44, 0x11, 0xb8, 0xd3, 0x2c, 0x5d, 0xb2, 0x3e, 0xf8, 0x5c, 0xe4, 0x9b,
+	0x2c, 0xcd, 0x45, 0x68, 0x0d, 0xac, 0x61, 0xc0, 0xcb, 0x73, 0xf4, 0xd3, 0x86, 0x27, 0x1c, 0xef,
+	0x8d, 0xb7, 0x22, 0x96, 0x82, 0x8b, 0xef, 0x85, 0xc8, 0x25, 0x63, 0xe0, 0x5e, 0xc4, 0x6b, 0x93,
+	0x8f, 0xdf, 0xec, 0xa9, 0x22, 0x8e, 0x57, 0x49, 0x68, 0x23, 0x48, 0x07, 0x16, 0x42, 0x6b, 0x9c,
+	0xa5, 0x52, 0xa4, 0x32, 0x74, 0x10, 0x37, 0x47, 0xf6, 0x12, 0x82, 0x69, 0x71, 0x99, 0xac, 0xf2,
+	0x6f, 0x62, 0x11, 0xba, 0x03, 0x6b, 0xe8, 0xf3, 0x1d, 0xc0, 0x0e, 0x00, 0xf2, 0x79, 0xb6, 0x15,
+	0xb3, 0xb4, 0x48, 0x92, 0xb0, 0xa9, 0xc2, 0x93, 0x06, 0x0f, 0x10, 0xbb, 0x28, 0x92, 0x84, 0xbd,
+	0x86, 0x36, 0x25, 0x5c, 0xc7, 0x49, 0x21, 0x42, 0x6f, 0x60, 0x0d, 0x9d, 0x49, 0x83, 0xd3, 0xad,
+	0xaf, 0x0a, 0x63, 0x87, 0xd0, 0x9d, 0xc7, 0x52, 0x2c, 0xb3, 0xed, 0x0d, 0xd1, 0xb4, 0x90, 0xc6,
+	0xe2, 0x1d, 0x03, 0x23, 0xd3, 0x11, 0xf4, 0xca, 0x34, 0x22, 0xf3, 0x55, 0xa5, 0x13, 0x8b, 0x97,
+	0xd7, 0x91, 0x6f, 0xd4, 0x82, 0xe6, 0x27, 0xc5, 0x3e, 0x02, 0xf0, 0xc7, 0x3a, 0x12, 0xfd, 0x76,
+	0xa0, 0xfb, 0x71, 0x25, 0x92, 0xc5, 0xe7, 0xec, 0xcb, 0x66, 0x11, 0x4b, 0xc1, 0x5e, 0x41, 0x90,
+	0xc6, 0x6b, 0x5d, 0xb9, 0xa5, 0x2b, 0xf7, 0x15, 0x84, 0xcf, 0x1d, 0x00, 0x60, 0x98, 0x9e, 0xc2,
+	0x66, 0xa9, 0x3f, 0x53, 0x18, 0x95, 0xfd, 0x06, 0x3a, 0x73, 0xea, 0x11, 0x51, 0x38, 0xba, 0xea,
+	0xb6, 0x46, 0x91, 0x45, 0xfd, 0x9b, 0x4e, 0x22, 0x22, 0x57, 0xd7, 0x6c, 0xee, 0x12, 0xd7, 0x11,
+	0xf4, 0x36, 0xa6, 0xa7, 0xb7, 0x5b, 0x69, 0xf3, 0x6e, 0x89, 0x23, 0xdf, 0x5b, 0x78, 0xb4, 0x4b,
+	0xdc, 0xb5, 0x54, 0x65, 0xee, 0x18, 0x88, 0x73, 0x5f, 0x1a, 0xea, 0xa9, 0x53, 0x23, 0x8d, 0x8f,
+	0xd2, 0x38, 0xf5, 0xd2, 0x04, 0x48, 0xe3, 0xde, 0x2b, 0x0d, 0xe0, 0x6f, 0xba, 0x77, 0xa5, 0xf1,
+	0x68, 0x20, 0x47, 0x41, 0x39, 0x6e, 0xa3, 0xf6, 0xad, 0xf9, 0xaa, 0x96, 0xee, 0xca, 0x0c, 0x37,
+	0x09, 0x67, 0x86, 0xbb, 0x07, 0xf6, 0xf9, 0x99, 0x1e, 0x6d, 0xfb, 0xfc, 0x8c, 0x9d, 0xc2, 0xe3,
+	0x2b, 0x25, 0x70, 0x3e, 0x93, 0xd9, 0xac, 0xc0, 0x54, 0x94, 0xad, 0x7d, 0xf2, 0xec, 0x58, 0x5b,
+	0x6c, 0x6f, 0x00, 0x78, 0x8f, 0xd2, 0xcd, 0x39, 0xfa, 0x63, 0x43, 0x8f, 0x1e, 0x32, 0xc6, 0xfa,
+	0xe7, 0x0d, 0x63, 0x28, 0xbb, 0xca, 0x50, 0xce, 0x7f, 0x0c, 0xe5, 0xd6, 0x18, 0xaa, 0x59, 0x6f,
+	0x28, 0xef, 0x5e, 0x43, 0xb5, 0x1e, 0x62, 0x28, 0xff, 0x81, 0x86, 0x0a, 0x2a, 0x0d, 0xa5, 0x2a,
+	0xa6, 0xbd, 0xb2, 0x78, 0x2f, 0x49, 0x59, 0xbe, 0x03, 0x54, 0x94, 0x1a, 0xa8, 0xa2, 0x6d, 0x8a,
+	0x96, 0x40, 0xa5, 0xa2, 0x27, 0xbf, 0x2c, 0xf0, 0xa8, 0xd3, 0xec, 0x14, 0x3c, 0xa2, 0x62, 0x2f,
+	0x8c, 0x4a, 0x15, 0x9b, 0xac, 0xff, 0x7c, 0x3f, 0x58, 0x6e, 0xbe, 0x86, 0x22, 0xd0, 0x86, 0xbe,
+	0x43, 0xb0, 0x37, 0x2d, 0x35, 0x04, 0x87, 0xe0, 0x4e, 0x57, 0xe9, 0x92, 0x75, 0x4d, 0x06, 0xee,
+	0xdd, 0x7e, 0xc7, 0x1c, 0xd5, 0xf6, 0x8d, 0x1a, 0x97, 0x1e, 0xee, 0xe7, 0x77, 0x7f, 0x03, 0x00,
+	0x00, 0xff, 0xff, 0x06, 0xa5, 0xde, 0x8c, 0xaf, 0x05, 0x00, 0x00,
 }

@@ -1,11 +1,9 @@
 package entity
 
 import (
-	"regexp"
-
 	"database/sql"
 
-	"encoding/json"
+	"time"
 
 	"database/sql/driver"
 
@@ -13,38 +11,39 @@ import (
 	"github.com/Sharykhin/it-customer-review/grpc-server/util"
 )
 
-// compile just once
-var re = regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
+const (
+	jsonTimeFormat = "2006-01-02T15:04:05"
+)
 
 type (
 	// Review represents base entity for grpc server
 	Review struct {
-		*pb.ReviewRequest
 		ID        string
-		CreatedAt JSONTime
+		Name      string
+		Email     string
+		Content   string
+		Published bool
+		Score     sql.NullInt64
 		Category  sql.NullString
-		Score     Score
+		CreatedAt JSONTime
+		UpdatedAt JSONTime
 	}
-	// Score is a specific type that converts into null in case -1 was provided
-	Score int64
+	// ReviewUpdate is wrapper around pb.ReviewUpdateRequest for easier validation
+	ReviewUpdate struct {
+		*pb.ReviewUpdateRequest
+	}
+	// JSONTime provides nullable time value in a preferable format
+	JSONTime time.Time
 )
 
-// MarshalJSON implements Marshaler interface to return null
-func (s Score) MarshalJSON() ([]byte, error) {
-	if s == -1 {
-		return json.Marshal(nil)
-	}
-
-	return json.Marshal(int64(s))
+//String returns datetime in a preferable format
+func (t JSONTime) String() string {
+	return time.Time(t).UTC().Format(jsonTimeFormat)
 }
 
-// Value returns nullable value in case -1 was provided to write NULL into a database
-func (s Score) Value() (driver.Value, error) {
-	if s == -1 {
-		return nil, nil
-	}
-
-	return int64(s), nil
+// Value returns string in UTC that should be saved in a database
+func (t JSONTime) Value() (driver.Value, error) {
+	return t.String(), nil
 }
 
 // NewReview is a fabric method that return a new review with generated uuid
@@ -52,6 +51,7 @@ func NewReview() *Review {
 
 	uuid, err := util.NewUUID()
 	if err != nil {
+		// I intentionally run panic since if an error occurred it meant that something really hard went wrong
 		panic("could not generate uuid")
 	}
 	return &Review{
@@ -74,13 +74,45 @@ func (r Review) Validate() error {
 		return err
 	}
 
-	if err := validateCategort(r.Category.String); err != nil {
-		return err
+	if r.Category.Valid {
+		if err := validateCategory(r.Category.String); err != nil {
+			return err
+		}
 	}
 
-	if err := validateScore(r.Score); err != nil {
-		return err
+	if r.Score.Valid {
+		if err := validateScore(r.Score.Int64); err != nil {
+			return err
+		}
 	}
 
+	return nil
+}
+
+// Validate validates income request on update review
+func (r ReviewUpdate) Validate() error {
+	if !r.FieldsToUpdate.GetNameNull() {
+		if err := validateName(r.FieldsToUpdate.GetNameValue()); err != nil {
+			return err
+		}
+	}
+
+	if !r.FieldsToUpdate.GetContentNull() {
+		if err := validateContent(r.FieldsToUpdate.GetContentValue()); err != nil {
+			return err
+		}
+	}
+
+	if !r.FieldsToUpdate.GetScoreNull() {
+		if err := validateScore(r.FieldsToUpdate.GetScoreValue()); err != nil {
+			return err
+		}
+	}
+
+	if !r.FieldsToUpdate.GetCategoryNull() {
+		if err := validateCategory(r.FieldsToUpdate.GetCategoryValue()); err != nil {
+			return err
+		}
+	}
 	return nil
 }

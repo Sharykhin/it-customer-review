@@ -1,41 +1,85 @@
 syntax = "proto3";
 package review;
 
-
 service Review {
-    rpc Create (ReviewRequest) returns (ReviewResponse) {}
-
-    rpc Update(ReviewRequest) returns(ReviewResponse) {}
-
+    // Create a new review
+    rpc Create (ReviewCreateRequest) returns (ReviewResponse) {}
+    // Update an existing review
+    rpc Update(ReviewUpdateRequest) returns(ReviewResponse) {}
+    // Detect whether server works or not
     rpc Ping(Empty) returns(Pong) {}
 }
 
+// Empty is some sort if missing input parameter
 message Empty {
 
 }
 
+// Pong simple response
 message Pong {
-    string response = 1;
+    string Response = 1;
 }
 
-// Request message for creating a new fail mail
-message ReviewRequest {
-    string Name = 2;
-    string Email = 3;
-    string Content = 4;
-    bool Published = 5;
-    int64 Score = 6;
-    string Category = 7;
+// ReviewCreateRequest message for creating a new review
+message ReviewCreateRequest {
+    string Name = 1;
+    string Email = 2;
+    string Content = 3;
+    bool Published = 4;
+    oneof Score {
+        bool score_null = 5;
+        int64 score_value = 6;
+    }
+    oneof Category {
+        bool category_null = 7;
+        string category_value = 8;
+    }
 }
 
-// Response of fail mail
+message FieldToUpdate {
+    oneof Name {
+        bool name_null = 1;
+        string name_value = 2;
+    }
+    oneof Content {
+        bool content_null = 3;
+        string content_value = 4;
+    }
+    oneof Published {
+        bool published_null = 5;
+        bool published_value = 6;
+    }
+    oneof Score {
+        bool score_null = 7;
+        int64 score_value = 8;
+    }
+    oneof Category {
+        bool category_null = 9;
+        string category_value = 10;
+    }
+}
+
+// ReviewUpdateRequest for updating an existing review
+message ReviewUpdateRequest {
+    string ID = 1;
+    FieldToUpdate fields_to_update = 2;
+}
+
+// Response of a review
 message ReviewResponse {
     string ID = 1;
     string Name = 2;
     string Email = 3;
     string Content = 4;
     bool Published = 5;
-    int64 Score = 6;
-    string Category = 7;
-    string CreatedAt = 8;
+    oneof Score {
+        bool score_null = 6;
+        int64 score_value = 7;
+    }
+    oneof Category {
+        bool category_null = 8;
+        string category_value = 9;
+    }
+    string CreatedAt = 10;
+    string UpdatedAt = 11;
 }

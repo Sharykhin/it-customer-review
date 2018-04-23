@@ -25,17 +25,44 @@ services:
     volumes:
       - .:/go/src/github.com/Sharykhin/it-customer-review
     links:
-      - cr-mysql-grpc-server-api
+      - cr-mysql-grpc-server
     depends_on:
-      - cr-mysql-grpc-server-api
+      - cr-mysql-grpc-server
     ports:
       - 50051:50051
 
-  cr-mysql-grpc-server-api:
-    container_name: cr-mysql-grpc-server-api
-    image: cr-mysql-grpc-server-api
+  cr-mysql-grpc-server:
+    container_name: cr-mysql-grpc-server
+    image: cr-mysql-grpc-server
     build:
       context: .
       dockerfile: grpc-server/.docker/mysql/Dockerfile
     env_file:
       - grpc-server/.docker/mysql/.env
+
+  cr-golang-tone-analyzer:
+    container_name: cr-golang-tone-analyzer
+    image: cr-golang-tone-analyzer
+    volumes:
+      - .:/go/src/github.com/Sharykhin/it-customer-review
+    build:
+      context: .
+      dockerfile: tone-analyzer/.docker/golang/Dockerfile.dev
+    env_file:
+      - tone-analyzer/.docker/golang/.env
+    links:
+      - cr-rabbitmq-tone-analyzer
+    depends_on:
+      - cr-rabbitmq-tone-analyzer
+
+  cr-rabbitmq-tone-analyzer:
+    container_name: cr-rabbitmq-tone-analyzer
+    image: cr-rabbitmq-tone-analyzer
+    build:
+      context: .
+      dockerfile: tone-analyzer/.docker/rabbitmq/Dockerfile.dev
+    ports:
+      - 5672:5672
+      - 15672:15672
+    env_file:
+      - tone-analyzer/.docker/rabbitmq/.env
