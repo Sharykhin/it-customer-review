@@ -3,8 +3,6 @@ package handler
 import (
 	"context"
 
-	"fmt"
-
 	"database/sql"
 
 	pb "github.com/Sharykhin/it-customer-review/grpc-proto"
@@ -71,10 +69,10 @@ func (s server) Update(ctx context.Context, in *pb.ReviewUpdateRequest) (*pb.Rev
 	review, err := s.storage.GetByID(ctx, in.ID)
 
 	if err != nil {
-		return nil, status.Errorf(codes.NotFound, fmt.Sprintf("review with ID %s counlt not be found", in.ID))
+		return nil, status.Errorf(codes.NotFound, "review with ID %s counlt not be found", in.ID)
 	}
 	if review == nil {
-		return nil, status.Errorf(codes.NotFound, fmt.Sprintf("review with ID %s counlt not be found", in.ID))
+		return nil, status.Errorf(codes.NotFound, "review with ID %s counlt not be found", in.ID)
 	}
 
 	review, err = s.storage.Update(ctx, ru, review)
@@ -94,10 +92,10 @@ func (s server) Update(ctx context.Context, in *pb.ReviewUpdateRequest) (*pb.Rev
 func (s server) Get(ctx context.Context, in *pb.ReviewID) (*pb.ReviewResponse, error) {
 	review, err := s.storage.GetByID(ctx, in.ID)
 	if err != nil {
-		return nil, status.Errorf(codes.NotFound, fmt.Sprintf("review with ID %s counlt not be found", in.ID))
+		return nil, status.Errorf(codes.NotFound, "review with ID %s counlt not be found", in.ID)
 	}
 	if review == nil {
-		return nil, status.Errorf(codes.NotFound, fmt.Sprintf("review with ID %s counlt not be found", in.ID))
+		return nil, status.Errorf(codes.NotFound, "review with ID %s counlt not be found", in.ID)
 	}
 
 	res, err := convert(review)
@@ -106,6 +104,33 @@ func (s server) Get(ctx context.Context, in *pb.ReviewID) (*pb.ReviewResponse, e
 	}
 
 	return res, nil
+}
+
+func (s server) GetReviewList(in *pb.ReviewListFilter, stream pb.Review_GetReviewListServer) error {
+	rl, err := s.storage.GetList(context.Background(), in.Criteria, in.Limit, in.Offset)
+
+	if err != nil {
+		return status.Errorf(codes.Internal, "could not get a list of reviews: %v", err)
+	}
+
+	for _, r := range rl {
+		res, err := convert(&r)
+		if err != nil {
+			return status.Errorf(codes.Internal, "could not convert review into a response: %v", err)
+		}
+		if err := stream.Send(res); err != nil {
+			return status.Errorf(codes.Internal, "could not sent a review into a stream: %v", err)
+		}
+	}
+	return nil
+}
+
+func (s server) CountReviews(ctx context.Context, in *pb.ReviewCountFilter) (*pb.CountResponse, error) {
+	t, err := s.storage.Count(ctx, in.Criteria)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "could not count reviews: %v", err)
+	}
+	return &pb.CountResponse{Total: t}, nil
 }
 
 func convert(r *entity.Review) (*pb.ReviewResponse, error) {

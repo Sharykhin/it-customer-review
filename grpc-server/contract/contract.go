@@ -3,6 +3,7 @@ package contract
 import (
 	"context"
 
+	pb "github.com/Sharykhin/it-customer-review/grpc-proto"
 	"github.com/Sharykhin/it-customer-review/grpc-server/entity"
 )
 
@@ -20,5 +21,7 @@ type (
 	// ReviewRepositoryProvider describes methods for getting reviews by different criteria
 	ReviewRepositoryProvider interface {
 		GetByID(ctx context.Context, ID string) (*entity.Review, error)
+		Count(ctx context.Context, criteria []*pb.Criteria) (int64, error)
+		GetList(ctx context.Context, criteria []*pb.Criteria, limit, offset int64) ([]entity.Review, error)
 	}
 )

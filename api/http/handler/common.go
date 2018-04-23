@@ -2,6 +2,8 @@ package handler
 
 import (
 	"encoding/json"
+	"net/http"
+	"strconv"
 
 	"fmt"
 
@@ -32,4 +34,22 @@ func publishAnalyzeJob(ID string, content string) error {
 		return fmt.Errorf("could not publish a message %s: %v", res, err)
 	}
 	return nil
+}
+
+func queryParamInt(r *http.Request, key string, defaultValue int64) (int64, error) {
+	v := r.FormValue(key)
+
+	if v == "" {
+		return defaultValue, nil
+	}
+
+	return strconv.ParseInt(v, 10, 64)
+}
+
+func queryCriteria(r *http.Request, key string) *entity.Criteria {
+	v := r.FormValue(key)
+	if v == "" {
+		return nil
+	}
+	return &entity.Criteria{Key: key, Value: v}
 }

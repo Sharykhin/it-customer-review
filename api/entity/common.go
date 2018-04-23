@@ -13,6 +13,11 @@ type (
 		Valid bool
 		Value string
 	}
+	// Criteria represent filter that should be applied for a query
+	Criteria struct {
+		Key   string
+		Value string
+	}
 )
 
 // UnmarshalJSON implements Unmarshaler interface to allow not to provide value at all

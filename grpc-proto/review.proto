@@ -10,6 +10,10 @@ service Review {
     rpc Get(ReviewID) returns(ReviewResponse) {}
     // Detect whether server works or not
     rpc Ping(Empty) returns(Pong) {}
+    // Returns review list based on criteria
+    rpc GetReviewList(ReviewListFilter) returns (stream ReviewResponse) {}
+    // Returns a total number of reviews depending on criteria
+    rpc CountReviews(ReviewCountFilter) returns (CountResponse) {}
 }
 
 // Empty is some sort if missing input parameter
@@ -17,9 +21,28 @@ message Empty {
 
 }
 
+message Criteria {
+    string key = 1;
+    string value = 2;
+}
+
+message ReviewListFilter {
+    repeated Criteria criteria = 1;
+    int64 limit = 2;
+    int64 offset = 3;
+}
+
+message ReviewCountFilter {
+    repeated Criteria criteria = 1;
+}
+// CountResponse returns total number of reviews
+message CountResponse {
+    int64 total = 1;
+}
+
 // Pong simple response
 message Pong {
-    string Response = 1;
+    string response = 1;
 }
 
 message ReviewID {
