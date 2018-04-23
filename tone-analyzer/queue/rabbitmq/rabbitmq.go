@@ -1,10 +1,11 @@
 package rabbitmq
 
 import (
+	"fmt"
 	"log"
 	"os"
 
-	"fmt"
+	"time"
 
 	"github.com/Sharykhin/it-customer-review/api/util"
 	"github.com/streadway/amqp"
@@ -53,34 +54,29 @@ func init() {
 	RabbitMQ = rabbitMQ{conn: conn, ch: ch, q: q}
 }
 
-// Publish published messages into a queue
-func (r rabbitMQ) Publish(body []byte) error {
+func (r rabbitMQ) Listen() (<-chan amqp.Delivery, error) {
+	msgs, err := r.ch.Consume(
+		r.q.Name, // queue
+		"",       // consumer
+		true,     // auto-ack
+		true,     // exclusive
+		false,    // no-local
+		false,    // no-wait
+		nil,      // args
+	)
 
-	err := r.ch.Publish(
-		"",       // exchange
-		r.q.Name, // routing key
-		false,    // mandatory
-		false,    // immediate
-		amqp.Publishing{
-			ContentType: "text/plain",
-			Body:        body,
-		})
 	if err != nil {
-		return fmt.Errorf("could not publish a message: %v", err)
+		return nil, fmt.Errorf("could not consume a queue %s: %v", queueName, err)
 	}
-	return nil
+
+	return msgs, nil
 }
 
 func listenClose(notify chan *amqp.Error, ch *amqp.Channel, conn *amqp.Connection) {
 	for err := range notify {
+		time.Sleep(1 * time.Second)
 		util.Check(ch.Close)
 		util.Check(conn.Close)
 		log.Fatalf("rabbitmq connection was broken: %v", err)
 	}
-	//select {
-	//case err := <-notify:
-	//	defer util.Check(ch.Close)
-	//	defer util.Check(conn.Close)
-	//	log.Fatalf("rabbitmq connection was broken: %v", err)
-	//}
 }
