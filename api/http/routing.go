@@ -18,27 +18,32 @@ func router() http.Handler {
 		middleware.Chain(http.HandlerFunc(handler.Pong),
 			middleware.PanicRecover,
 			middleware.CORS,
-		))).Methods("GET")
+		))).Methods("GET", "OPTIONS")
+
 	r.Handle("/reviews/{id}", middleware.Chain(
 		middleware.Chain(http.HandlerFunc(handler.Get),
 			middleware.PanicRecover,
 			middleware.CORS,
-		))).Methods("GET")
+		))).Methods("GET", "OPTIONS")
+
 	r.Handle("/reviews", middleware.Chain(
 		middleware.Chain(http.HandlerFunc(handler.Create),
 			middleware.PanicRecover,
 			middleware.CORS,
-		))).Methods("POST")
+		))).Methods("POST", "OPTIONS")
+
 	r.Handle("/reviews/{id}", middleware.Chain(
 		middleware.Chain(http.HandlerFunc(handler.Update),
 			middleware.PanicRecover,
 			middleware.CORS,
-		))).Methods("PUT")
+		))).Methods("PUT", "OPTIONS")
+
 	r.Handle("/reviews", middleware.Chain(
 		middleware.Chain(http.HandlerFunc(handler.Index),
 			middleware.PanicRecover,
 			middleware.CORS,
-		))).Methods("GET")
+		))).Methods("GET", "OPTIONS")
+
 	return r
 }
 
