@@ -31,7 +31,7 @@ type (
 )
 
 // ReviewService is a grpc service that would be responsible for managing reviews.
-var ReviewService contract.ServiceProvider
+var ReviewService contract.ReviewProvider
 
 func init() {
 	conn, err := grpc.Dial(os.Getenv("GRPC_ADDRESS"), grpc.WithInsecure())

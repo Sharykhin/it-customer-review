@@ -10,6 +10,7 @@ import (
 
 	"github.com/Sharykhin/it-customer-review/api/entity"
 	"github.com/Sharykhin/it-customer-review/api/grpc"
+	"github.com/Sharykhin/it-customer-review/api/session"
 	"github.com/Sharykhin/it-customer-review/api/util"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
@@ -21,6 +22,22 @@ import (
 func Update(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
+
+	sess, err := session.Store.Get(r, "it-customer-review")
+	if err != nil {
+		panic(fmt.Sprintf("could not get cookie from a request: %v", err))
+	}
+
+	if access, ok := sess.Values[id].(bool); !ok || !access {
+		util.JSON(util.Response{
+			Success: false,
+			Data:    nil,
+			Error:   util.ErrorField{Err: errors.New(http.StatusText(http.StatusForbidden))},
+			Meta:    nil,
+		}, w, http.StatusForbidden)
+		return
+	}
+
 	decoder := json.NewDecoder(r.Body)
 	defer util.Check(r.Body.Close)
 	var rr entity.ReviewUpdateRequest
@@ -63,7 +80,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 			log.Printf("could not dispatch analyzer job: %v", err)
 		}
 	}
-	fmt.Println(review)
+
 	util.JSON(util.Response{
 		Success: true,
 		Data:    review,
