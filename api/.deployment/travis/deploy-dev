@@ -1,0 +1,28 @@
+#!/bin/bash
+
+if ([ $TRAVIS_BRANCH == "develop" ] && [ $TRAVIS_PULL_REQUEST == "false" ])
+then
+    VERSION=$(git rev-parse --short develop)
+
+    echo "Build a new image with tag: ${VERSION}"
+    docker build -t gcr.io/${PROJECT_NAME}/${DOCKER_IMAGE_NAME}:${VERSION} . --file .docker/golang/Dockerfile.prod
+    echo "Specify gcloud parameters"
+    gcloud --quiet config set project ${PROJECT_NAME}
+    gcloud --quiet config set container/cluster ${CLUSTER_NAME}
+    gcloud --quiet config set compute/zone ${CLOUDSDK_COMPUTE_ZONE}
+    gcloud --quiet container clusters get-credentials ${CLUSTER_NAME}
+
+    echo "Push a new image into Google Cloud Registry"
+    gcloud docker -- push gcr.io/${PROJECT_NAME}/${DOCKER_IMAGE_NAME}:${VERSION}
+
+    echo "Download kubectl"
+    gcloud components install kubectl
+
+    echo "Update kubernetes deployment"
+    sed 's/${VERSION}/'"${VERSION}"'/g' .deployment/k8s/dev/deployment.tpl.yml > .deployment/k8s/dev/deployment.yml
+    kubectl --namespace=dev apply -f .deployment/k8s/dev/deployment.yml
+
+    echo "Application was deployed on stage with version: ${VERSION}"
+else
+  echo "Build successful, but not publishing!"
+fi
