@@ -8,6 +8,11 @@ Requirements:
 
 [Docker](https://www.docker.com/)
 
+Usage:
+------
+
+UI is ready on [http://35.192.27.127/](http://35.192.27.127/) for some testing.
+
 Local development:
 -----------------
 

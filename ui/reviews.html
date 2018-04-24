@@ -28,7 +28,12 @@
 </div>
 <script>
     $(document).ready(function () {
-        var host = location.host;
+        var host
+        if (location.host === "localhost" || location.host === "127.0.0.1") {
+            host = "localhost";
+        } else {
+            host = "35.193.231.164";
+        }
         $.ajax({
             method: "GET",
             url: "http://" + host + ":8080/reviews",
