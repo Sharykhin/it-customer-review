@@ -38,6 +38,6 @@ docker-compose up -d
 docker-compose ps
 ```
 
-By default *8080* port is open, go to [http://localhost:8080/ping](http://localhost:8080/ping)
-to detect whether it works or not.
+Go to [http://localhost:3000](http://localhost:3000) to see how everything works.
+
 
