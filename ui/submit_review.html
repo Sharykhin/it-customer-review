@@ -1,0 +1,72 @@
+<html>
+<head>
+    <title>Customer Review | Create</title>
+    <script src="static/js/jquery-3.3.1.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/css/bootstrap.css" />
+</head>
+<body>
+<div class="container">
+    <h2>Submit a new review</h2>
+    <div class="alert alert-success" role="alert" id="successNofitication">
+        A new review has been created!
+    </div>
+    <form id="reviewForm">
+        <div class="form-group">
+            <label for="nameField">Name</label>
+            <input type="text" name="name" class="form-control" id="nameField" aria-describedby="emailHelp" placeholder="Enter Your Name">
+        </div>
+        <div class="form-group">
+            <label for="emailField">Email address</label>
+            <input type="email" name="email" class="form-control" id="emailField" aria-describedby="emailHelp" placeholder="Enter email">
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+        <div class="form-group">
+            <label for="contentField">Example textarea</label>
+            <textarea name="content" class="form-control" id="contentField" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <div>
+        <a href="/reviews">Check reviews</a>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        $('#successNofitication').hide();
+        $('#reviewForm').on('submit', function (event) {
+            event.preventDefault();
+            $.ajax({
+                method: "POST",
+                url: "http://127.0.0.1:8080/reviews",
+                data: JSON.stringify({
+                    name: $('#nameField').val(),
+                    email: $('#emailField').val(),
+                    content: $('#contentField').val()
+                }),
+                xhrFields: {
+                    withCredentials: true
+                },
+                crossDomain: true,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(res) {
+                    console.log('success', res);
+                    $('#successNofitication').show();
+                    setTimeout(function () {
+                        $('#successNofitication').hide();
+                    }, 5000);
+                    var ids = sessionStorage.getItem("ids");
+                    var idsArray = ids ? JSON.parse(ids) : [];
+                    idsArray.push(res.data.id);
+                    sessionStorage.setItem("ids", JSON.stringify(idsArray));
+                },
+                error: function (res) {
+                    console.log('err', res);
+                }
+            })
+        })
+    });
+</script>
+</body>
+</html>
