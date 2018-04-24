@@ -20,7 +20,7 @@ then
 
     echo "Update kubernetes deployment"
     sed 's/${VERSION}/'"${VERSION}"'/g' .deployment/k8s/dev/deployment.tpl.yml > .deployment/k8s/dev/deployment.yml
-    kubectl --namespace=dev apply -f .deployment/k8s/dev/deployment.yml
+    kubectl apply -f .deployment/k8s/dev/deployment.yml
 
     echo "Application was deployed on stage with version: ${VERSION}"
 else

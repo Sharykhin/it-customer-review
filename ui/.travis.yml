@@ -8,17 +8,12 @@ env:
     - PROJECT_NAME=kubernetes-example-199908
     - CLUSTER_NAME=cluster-1
     - CLOUDSDK_COMPUTE_ZONE=us-central1-a
-    - DOCKER_IMAGE_NAME=api-server-golang
+    - DOCKER_IMAGE_NAME=web-ui
 services:
 - docker
 cache:
  directories:
   - "$HOME/google-cloud-sdk/"
-install:
-- go get -u gopkg.in/alecthomas/gometalinter.v2
--  gometalinter.v2 --install
-script:
-- if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./.deployment/travis/script-test; fi
 before_deploy:
 - openssl aes-256-cbc -K $encrypted_bd75f0e62987_key -iv $encrypted_bd75f0e62987_iv
   -in client-secret.json.enc -out ${GOOGLE_APPLICATION_CREDENTIALS} -d

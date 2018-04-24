@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cr-rabbitmq-service
+  namespace: default
+spec:
+  ports:
+  - port: 5672
+    targetPort: 5672
+  selector:
+    name: tone-analyzer-queue
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: tone-analyzer-queue
+  namespace: default
+  labels:
+    app: tone-analyzer-queue
+spec:
+  replicas: 3
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      name: tone-analyzer-queue
+  template:
+    metadata:
+      labels:
+        name: tone-analyzer-queue
+    spec:
+      containers:
+      - name: tone-analyzer-queue
+        image: gcr.io/kubernetes-example-199908/tone-analyzer-queue
+        env:
+        - name: RABBITMQ_DEFAULT_USER
+          value: "guest"
+        - name: RABBITMQ_DEFAULT_PASS
+          value: "guest"

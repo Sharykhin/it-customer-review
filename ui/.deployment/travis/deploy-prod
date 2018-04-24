@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if ([ $TRAVIS_BRANCH == "master" ] && [ $TRAVIS_PULL_REQUEST == "false" ])
+if ([ $TRAVIS_BRANCH == "develop" ] && [ $TRAVIS_PULL_REQUEST == "false" ])
 then
     VERSION=$(git rev-parse --short master)
 
@@ -18,14 +18,11 @@ then
     echo "Download kubectl"
     gcloud components install kubectl
 
-    echo "Update kubernetes deployment and jobs"
+    echo "Update kubernetes deployment"
     sed 's/${VERSION}/'"${VERSION}"'/g' .deployment/k8s/dev/deployment.tpl.yml > .deployment/k8s/dev/deployment.yml
-    kubectl apply -f .deployment/k8s/dev/deployment.yml
-    sed 's/${VERSION}/'"${VERSION}"'/g' .deployment/k8s/dev/job.tpl.yml > .deployment/k8s/dev/job.yml
-    kubectl delete -f .deployment/k8s/dev/job.yml
-    kubectl apply -f .deployment/k8s/dev/job.yml
+    kubectl --namespace=dev apply -f .deployment/k8s/dev/deployment.yml
 
-    echo "Application was deployed on prod with version: ${VERSION}"
+    echo "Application was deployed on stage with version: ${VERSION}"
 else
   echo "Build successful, but not publishing!"
 fi

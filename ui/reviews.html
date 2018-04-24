@@ -28,10 +28,10 @@
 </div>
 <script>
     $(document).ready(function () {
-
+        var host = location.host;
         $.ajax({
             method: "GET",
-            url: "http://127.0.0.1:8080/reviews",
+            url: "http://" + host + ":8080/reviews",
             success: function(res) {
                 console.log('success', res);
                 var tr = "";

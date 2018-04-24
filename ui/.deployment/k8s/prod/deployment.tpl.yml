@@ -19,7 +19,7 @@ metadata:
   labels:
     app: api-server
 spec:
-  replicas: 1
+  replicas: 3
   revisionHistoryLimit: 3
   selector:
     matchLabels:
@@ -36,15 +36,15 @@ spec:
         - name: HTTP_ADDRESS
           value: ":8080"
         - name: APP_ENV
-          value: "dev"
+          value: "prod"
         - name: CORS_ORIGIN
-          value: "http://35.192.117.233"
+          value: *
         - name: AMPQ_ADDRESS
           value: "amqp://cr-rabbitmq-service:5672"
         - name: SESSION_KEY
           value: "B4B2F7F0D2A48D2AD4CCF65CC5DC360A37B8A6FB171627259531"
         - name: GRPC_ADDRESS
-          value: "cr-grpc-service:50051"
+          value: cr-grpc-service:50051
         livenessProbe:
           httpGet:
             path: /ping

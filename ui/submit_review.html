@@ -32,13 +32,13 @@
 </div>
 <script>
     $(document).ready(function () {
-
+        var host = location.host;
         $('#successNofitication').hide();
         $('#reviewForm').on('submit', function (event) {
             event.preventDefault();
             $.ajax({
                 method: "POST",
-                url: "http://127.0.0.1:8080/reviews",
+                url: "http://" + host + "8080/reviews",
                 data: JSON.stringify({
                     name: $('#nameField').val(),
                     email: $('#emailField').val(),

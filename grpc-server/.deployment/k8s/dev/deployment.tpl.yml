@@ -2,13 +2,13 @@ kind: Service
 apiVersion: v1
 metadata:
   name: cr-grpc-service
+  namespace: default
 spec:
-  selector:
-    app: grpc-server
   ports:
-  - protocol: TCP
-    port: 50051
+  - port: 50051
     targetPort: 50051
+  selector:
+    name: grpc-server
 ---
 apiVersion: apps/v1beta2
 kind: Deployment

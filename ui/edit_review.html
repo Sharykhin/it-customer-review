@@ -45,12 +45,13 @@
 </div>
 <script>
     $(document).ready(function () {
+        var host = location.host;
         $('#successNofitication').hide();
         var id = location.search.replace("?id=", "");
         var review;
         $.ajax({
             method: "GET",
-            url:"http://127.0.0.1:8080/reviews/" + id,
+            url:"http://" + host + ":8080/reviews/" + id,
             success: function(res) {
                 $('#nameField').val(res.data.name);
                 $('#emailField').val(res.data.email);
@@ -85,7 +86,7 @@
             if (Object.keys(fieldsToUpdate).length > 0) {
                 $.ajax({
                     method: "PUT",
-                    url: "http://127.0.0.1:8080/reviews/" + id,
+                    url: "http://" + host + ":8080/reviews/" + id,
                     data: JSON.stringify(fieldsToUpdate),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
@@ -105,9 +106,7 @@
                     }
                 })
             }
-            console.log(fieldsToUpdate);
-
-        })
+        });
     });
 </script>
 </body>
