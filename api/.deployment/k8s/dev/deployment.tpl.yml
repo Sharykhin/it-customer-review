@@ -38,7 +38,7 @@ spec:
         - name: APP_ENV
           value: "dev"
         - name: CORS_ORIGIN
-          value: "http://35.192.117.233"
+          value: "http://35.192.27.127"
         - name: AMPQ_ADDRESS
           value: "amqp://cr-rabbitmq-service:5672"
         - name: SESSION_KEY
