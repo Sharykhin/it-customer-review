@@ -43,7 +43,7 @@
             event.preventDefault();
             $.ajax({
                 method: "POST",
-                url: "http://" + host + "8080/reviews",
+                url: "http://" + host + ":8080/reviews",
                 data: JSON.stringify({
                     name: $('#nameField').val(),
                     email: $('#emailField').val(),
