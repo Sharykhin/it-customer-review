@@ -1,0 +1,62 @@
+<html>
+<head>
+    <title>Customer Review | Create</title>
+    <script src="static/js/jquery-3.3.1.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/css/bootstrap.css" />
+</head>
+<body>
+<div class="container">
+    <h2>Reviews</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Email arrival date (GMT)</th>
+            <th scope="col">From (email address)</th>
+            <th scope="col">Sentiment score</th>
+            <th scope="col">Publish?</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+
+
+        </tbody>
+    </table>
+    <div>
+        <a href="/submit_review">Create a new review</a>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        $.ajax({
+            method: "GET",
+            url: "http://127.0.0.1:8080/reviews",
+            success: function(res) {
+                console.log('success', res);
+                var tr = "";
+                var ids = sessionStorage.getItem("ids");
+                var idsArray = ids ? JSON.parse(ids) : [];
+                res.data.forEach(function (item) {
+                    tr += "<tr>";
+                    tr += "<td>" + item.created_at + "</td>";
+                    tr += "<td>" + item.email + "</td>";
+                    tr += "<td>" + item.score + "</td>";
+                    tr += "<td>" + (item.published ? "yes" : "no") + "</td>";
+                    if (idsArray.indexOf(item.id) !== -1) {
+                        tr += "<td><a class='btn btn-primary' href='/edit_review?id=" + item.id + "'>Edit</a></td>";
+                    } else {
+                        tr += "<td></td>";
+                    }
+                    tr += "</tr>";
+                });
+                $('table tbody').html(tr);
+            },
+            error: function (res) {
+                console.log('err', res);
+            }
+        })
+    });
+</script>
+</body>
+</html>

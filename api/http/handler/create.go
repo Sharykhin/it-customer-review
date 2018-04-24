@@ -56,7 +56,10 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sess.Values[review.ID] = true
-	sess.Save(r, w)
+	err = sess.Save(r, w)
+	if err != nil {
+		log.Printf("could not write session value:%v", err)
+	}
 
 	util.JSON(util.Response{
 		Success: true,

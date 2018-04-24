@@ -66,3 +66,14 @@ services:
       - 15672:15672
     env_file:
       - tone-analyzer/.docker/rabbitmq/.env
+
+  cr-ui:
+      container_name: cr-ui
+      image: cr-ui
+      build:
+        context: .
+        dockerfile: ui/.docker/nginx/Dockerfile
+      volumes:
+        - ./ui:/var/www/public
+      ports:
+        - 3000:80
