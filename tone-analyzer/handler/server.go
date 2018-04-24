@@ -2,8 +2,8 @@ package handler
 
 import (
 	"fmt"
-	"log"
 
+	"github.com/Sharykhin/it-customer-review/tone-analyzer/logger"
 	"github.com/Sharykhin/it-customer-review/tone-analyzer/queue"
 )
 
@@ -20,7 +20,7 @@ func ListenAndServe() error {
 			fmt.Printf("Received a message: %s\n", msg)
 			err := handle(msg)
 			if err != nil {
-				log.Println(err)
+				logger.Logger.Errorf("could not handle income message: %s, error: %v", msg, err)
 			}
 		}
 	}()

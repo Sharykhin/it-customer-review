@@ -1,11 +1,9 @@
 package analyzer
 
 import (
-	"testing"
-
-	"sync"
-
 	"encoding/json"
+	"sync"
+	"testing"
 
 	"github.com/stretchr/testify/assert"
 )

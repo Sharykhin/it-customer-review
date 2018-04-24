@@ -6,10 +6,9 @@ import (
 
 	"encoding/json"
 
-	"fmt"
-
 	"github.com/Sharykhin/it-customer-review/api/entity"
 	"github.com/Sharykhin/it-customer-review/api/grpc"
+	"github.com/Sharykhin/it-customer-review/api/logger"
 	"github.com/Sharykhin/it-customer-review/api/session"
 	"github.com/Sharykhin/it-customer-review/api/util"
 	"github.com/gorilla/mux"
@@ -25,7 +24,9 @@ func Update(w http.ResponseWriter, r *http.Request) {
 
 	sess, err := session.Store.Get(r, "it-customer-review")
 	if err != nil {
-		panic(fmt.Sprintf("could not get cookie from a request: %v", err))
+		logger.Logger.Errorf("could not get cookie from a request: %v", err)
+		util.JSONError(err, w)
+		return
 	}
 
 	if access, ok := sess.Values[id].(bool); !ok || !access {
@@ -41,12 +42,12 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer util.Check(r.Body.Close)
 	var rr entity.ReviewUpdateRequest
-	if err := decoder.Decode(&rr); err != nil {
+	if err = decoder.Decode(&rr); err != nil {
 		util.JSONBadRequest(errors.New("please provide a valid json"), w)
 		return
 	}
 
-	if err := rr.Validate(); err != nil {
+	if err = rr.Validate(); err != nil {
 		util.JSONBadRequest(err, w)
 		return
 	}
@@ -64,13 +65,8 @@ func Update(w http.ResponseWriter, r *http.Request) {
 			}, w, http.StatusNotFound)
 			return
 		}
-		log.Printf("could not update a review: %v", err)
-		util.JSON(util.Response{
-			Success: false,
-			Data:    nil,
-			Error:   util.ErrorField{Err: errors.New(http.StatusText(http.StatusInternalServerError))},
-			Meta:    nil,
-		}, w, http.StatusInternalServerError)
+		logger.Logger.Errorf("could not update a review, request: %v, error: %v", rr, err.Err())
+		util.JSONError(err.Err(), w)
 		return
 	}
 

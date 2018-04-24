@@ -5,6 +5,7 @@ import (
 
 	"github.com/Sharykhin/it-customer-review/api/entity"
 	"github.com/Sharykhin/it-customer-review/api/grpc"
+	"github.com/Sharykhin/it-customer-review/api/logger"
 	"github.com/Sharykhin/it-customer-review/api/util"
 )
 
@@ -35,12 +36,9 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	rs, t, err := grpc.ReviewService.Index(r.Context(), c, limit, offset)
 
 	if err != nil {
-		util.JSON(util.Response{
-			Success: false,
-			Data:    nil,
-			Error:   util.ErrorField{Err: err},
-			Meta:    nil,
-		}, w, http.StatusInternalServerError)
+		logger.Logger.Errorf("could not get a list of reviews: %v", err)
+		util.JSONError(err, w)
+		return
 	}
 
 	util.JSON(util.Response{

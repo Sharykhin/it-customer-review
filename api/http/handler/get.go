@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Sharykhin/it-customer-review/api/grpc"
+	"github.com/Sharykhin/it-customer-review/api/logger"
 	"github.com/Sharykhin/it-customer-review/api/util"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
@@ -29,13 +30,8 @@ func Get(w http.ResponseWriter, r *http.Request) {
 			}, w, http.StatusNotFound)
 			return
 		}
-
-		util.JSON(util.Response{
-			Success: false,
-			Data:    nil,
-			Error:   util.ErrorField{Err: errors.New(http.StatusText(http.StatusInternalServerError))},
-			Meta:    nil,
-		}, w, http.StatusInternalServerError)
+		logger.Logger.Errorf("could not get a review with id: %s, error: %v", id, err.Err())
+		util.JSONError(err.Err(), w)
 		return
 	}
 

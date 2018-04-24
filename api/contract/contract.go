@@ -28,4 +28,9 @@ type (
 	QueueMessageProvider interface {
 		Publish(body []byte) error
 	}
+
+	// Logger describes general methods for logging
+	Logger interface {
+		Errorf(format string, args ...interface{})
+	}
 )
