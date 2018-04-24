@@ -21,6 +21,12 @@ cp .env.example .env
  
 cd grpc-server/.docker/mysql
 cp .env.example .env
+
+cd tone-analyzer/.docker/golang
+cp .env.example .env
+
+cd tone-analyzer/.docker/rabbitmq
+cp .env.example .env
 ```
 
 2. Build images:
