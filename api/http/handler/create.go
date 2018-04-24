@@ -27,7 +27,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer util.Check(r.Body.Close)
 	var rr entity.ReviewRequest
-	if err := decoder.Decode(&rr); err != nil {
+	if err = decoder.Decode(&rr); err != nil {
 		util.JSONBadRequest(errors.New("please provide a valid json"), w)
 		return
 	}

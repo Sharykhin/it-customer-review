@@ -6,6 +6,7 @@ WORKDIR /go/src/github.com/Sharykhin/it-customer-review/api
 
 RUN go get . && \
     go get github.com/gorilla/sessions && \
+    go get github.com/stretchr/testify/mock && \
     go get github.com/canthefason/go-watcher && \
     go install github.com/canthefason/go-watcher/cmd/watcher && \
     go get -u gopkg.in/alecthomas/gometalinter.v2 && \

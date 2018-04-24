@@ -60,7 +60,7 @@ func (m mockStorage) GetReviewList(ctx context.Context, in *pb.ReviewListFilter,
 	if err != nil {
 		return nil, err
 	}
-	return res.(*pb.Review_GetReviewListClient), nil
+	return res.(pb.Review_GetReviewListClient), nil
 }
 
 func (m mockStorage) CountReviews(ctx context.Context, in *pb.ReviewCountFilter, opts ...grpc.CallOption) (*pb.CountResponse, error) {
@@ -95,15 +95,19 @@ func TestReviewService_Create(t *testing.T) {
 	}
 
 	m.On("Create", ctx, &pb.ReviewCreateRequest{
-		Name:    "bob",
-		Email:   "bob@mail.com",
-		Content: "I like testing",
+		Name:     "bob",
+		Email:    "bob@mail.com",
+		Content:  "I like testing",
+		Score:    &pb.ReviewCreateRequest_ScoreNull{ScoreNull: true},
+		Category: &pb.ReviewCreateRequest_CategoryNull{CategoryNull: true},
 	}).Return(&expectedResponse, nil).Once()
 
 	m.On("Create", ctx, &pb.ReviewCreateRequest{
-		Name:    "alice",
-		Email:   "alice@mail.com",
-		Content: "I hate testing",
+		Name:     "alice",
+		Email:    "alice@mail.com",
+		Content:  "I hate testing",
+		Score:    &pb.ReviewCreateRequest_ScoreNull{ScoreNull: true},
+		Category: &pb.ReviewCreateRequest_CategoryNull{CategoryNull: true},
 	}).Return(nil, errors.New("some error")).Once()
 
 	tt := []struct {
@@ -146,7 +150,11 @@ func TestReviewService_Create(t *testing.T) {
 			defer wg.Done()
 			actual, err := ctrl.Create(ctx, tc.incomeRequest)
 			if err == nil {
-				require.Equal(t, tc.expectedReview, actual)
+				require.Equal(t, tc.expectedReview.ID, actual.ID)
+				require.Equal(t, tc.expectedReview.Name, actual.Name)
+				require.Equal(t, tc.expectedReview.Email, actual.Email)
+				require.Equal(t, tc.expectedReview.Content, actual.Content)
+				require.Equal(t, tc.expectedReview.Published, actual.Published)
 			}
 
 			if err != nil {

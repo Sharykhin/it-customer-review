@@ -9,7 +9,7 @@ import (
 //PanicRecover catches potentials panics and return internal server error in a proper format
 func PanicRecover(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if os.Getenv("APP_ENV") != "dev" {
+		if os.Getenv("APP_ENV") == "prod" {
 			var err error
 			defer func() {
 				r := recover()
