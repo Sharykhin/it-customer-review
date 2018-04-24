@@ -1,0 +1,3 @@
+#!/bin/bash
+
+gometalinter.v2 ./... --deadline=60s

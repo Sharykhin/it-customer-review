@@ -1,7 +1,6 @@
 FROM golang:1.9
 
 ENV APP_ENV prod
-ENV MYSQL_ADDRESS "test:test@tcp(localhost:3306)/test?parseTime=true"
 
 ADD . /go/src/github.com/Sharykhin/it-customer-review
 
@@ -9,7 +8,11 @@ WORKDIR /go/src/github.com/Sharykhin/it-customer-review/grpc-server
 
 RUN go get . && \
     go get github.com/go-sql-driver/mysql && \
+    go get github.com/mattes/migrate && \
+    curl -L "https://github.com/mattes/migrate/releases/download/v3.0.1/migrate.linux-amd64.tar.gz" | tar xvz && \
     go build -o /go/bin/it-customer-review-grpc-server .
+
+RUN mv migrate.linux-amd64 /go/bin/migrate
 
 EXPOSE 50051
 

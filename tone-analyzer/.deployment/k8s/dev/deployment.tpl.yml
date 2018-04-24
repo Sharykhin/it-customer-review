@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cr-rabbitmq-service
+  namespace: default
+spec:
+  ports:
+  - port: 5672
+    targetPort: 5672
+  selector:
+    name: tone-analyzer
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: tone-analyzer
+  namespace: default
+  labels:
+    app: tone-analyzer
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      name: tone-analyzer
+  template:
+    metadata:
+      labels:
+        name: tone-analyzer
+    spec:
+      containers:
+      - name: tone-analyzer-golang
+        image: gcr.io/kubernetes-example-199908/tone-analyzer-golang:${VERSION}
+        env:
+        - name: AMPQ_ADDRESS
+          value: "amqp://cr-rabbitmq-service:5672"
+        - name: APP_ENV
+          value: "dev"
+        - name: GRPC_ADDRESS
+          value: "cr-grpc-service:50051"
+        - name: TONE_ANALYZER_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: tone-analyzer-api-credentials
+              key: username
+        - name: TONE_ANALYZER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: tone-analyzer-api-credentials
+              key: password
+
+      - name: tone-analyzer-queue
+        image: gcr.io/kubernetes-example-199908/tone-analyzer-queue
+        env:
+        - name: RABBITMQ_DEFAULT_USER
+          value: "guest"
+        - name: RABBITMQ_DEFAULT_PASS
+          value: "guest"
+      volumes:
+      - name: tone-analyzer-api-credentials
+        secret:
+          secretName: tone-analyzer-api-credentials
