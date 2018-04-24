@@ -9,8 +9,6 @@ env:
     - CLUSTER_NAME=cluster-1
     - CLOUDSDK_COMPUTE_ZONE=us-central1-a
     - DOCKER_IMAGE_NAME=grpc-server-golang
-    - KUBE_DEPLOYMENT_NAME=grpc-server
-    - KUBE_DEPLOYMENT_CONTAINER_NAME=grpc-server-golang
 services:
 - docker
 cache:

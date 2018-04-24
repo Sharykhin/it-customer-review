@@ -1,9 +1,6 @@
 #!make
 .PHONY: test lint migrate-up migrate-down
 
-include .docker/golang/.env
-export $(shell sed 's/=.*//' .docker/golang/.env)
-
 test:
 	go test -v ./...
 
