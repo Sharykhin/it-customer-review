@@ -11,35 +11,17 @@ Requirements:
 Local development:
 -----------------
 
-1. Copy all .env.example files into .env
+1. Run installation
 ```bash
-cd api/.docker.golang
-cp .env.example .env
- 
-cd grpc-server/.docker/golang 
-cp .env.example .env
- 
-cd grpc-server/.docker/mysql
-cp .env.example .env
-
-cd tone-analyzer/.docker/golang
-cp .env.example .env
-
-cd tone-analyzer/.docker/rabbitmq
-cp .env.example .env
+make install
 ```
 
-2. Build images:
-```bash
-docker-compose build
-```
-
-3. Run containers:
+2. Run containers:
 ```bash
 docker-compose up -d
 ```
 
-4. Ensure all containers were run successfully:
+3. Ensure all containers were run successfully:
 ```bash
 docker-compose ps
 ```
