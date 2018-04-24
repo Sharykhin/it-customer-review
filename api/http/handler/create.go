@@ -1,16 +1,13 @@
 package handler
 
 import (
-	"net/http"
-
 	"encoding/json"
-
-	"log"
-
 	"fmt"
+	"net/http"
 
 	"github.com/Sharykhin/it-customer-review/api/entity"
 	"github.com/Sharykhin/it-customer-review/api/grpc"
+	"github.com/Sharykhin/it-customer-review/api/logger"
 	"github.com/Sharykhin/it-customer-review/api/session"
 	"github.com/Sharykhin/it-customer-review/api/util"
 	"github.com/pkg/errors"
@@ -32,7 +29,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := rr.Validate(); err != nil {
+	if err = rr.Validate(); err != nil {
 		util.JSONBadRequest(err, w)
 		return
 	}
@@ -40,25 +37,20 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	review, err := grpc.ReviewService.Create(r.Context(), rr)
 
 	if err != nil {
-		log.Printf("could not create a new review: %v", err)
-		util.JSON(util.Response{
-			Success: false,
-			Data:    nil,
-			Error:   util.ErrorField{Err: errors.New(http.StatusText(http.StatusInternalServerError))},
-			Meta:    nil,
-		}, w, http.StatusInternalServerError)
+		logger.Logger.Errorf("could not create a new review, request: %v, error: %v", rr, err)
+		util.JSONError(err, w)
 		return
 	}
 
 	err = publishAnalyzeJob(review.ID, review.Content)
 	if err != nil {
-		log.Printf("could not dispatch analyzer job: %v", err)
+		logger.Logger.Errorf("could not dispatch analyzer job: %v", err)
 	}
 
 	sess.Values[review.ID] = true
 	err = sess.Save(r, w)
 	if err != nil {
-		log.Printf("could not write session value:%v", err)
+		logger.Logger.Errorf("could not write a session value: %v", err)
 	}
 
 	util.JSON(util.Response{

@@ -43,13 +43,13 @@ services:
   cr-golang-tone-analyzer:
     container_name: cr-golang-tone-analyzer
     image: cr-golang-tone-analyzer
-    volumes:
-      - .:/go/src/github.com/Sharykhin/it-customer-review
     build:
       context: .
       dockerfile: tone-analyzer/.docker/golang/Dockerfile.dev
     env_file:
       - tone-analyzer/.docker/golang/.env
+    volumes:
+      - .:/go/src/github.com/Sharykhin/it-customer-review
     links:
       - cr-rabbitmq-tone-analyzer
     depends_on:

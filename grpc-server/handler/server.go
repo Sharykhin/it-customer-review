@@ -24,7 +24,6 @@ func (s server) Ping(ctx context.Context, in *pb.Empty) (*pb.Pong, error) {
 // Create creates a new review. This func also makes validation since we can't totally rely
 // that other services would provide a valida data
 func (s server) Create(ctx context.Context, in *pb.ReviewCreateRequest) (*pb.ReviewResponse, error) {
-
 	r := entity.NewReview()
 	r.Name = in.Name
 	r.Email = in.Email

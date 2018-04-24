@@ -65,7 +65,6 @@ func (s storage) Create(ctx context.Context, r *entity.Review) (*entity.Review, 
 	)
 
 	if err != nil {
-		log.Printf("could not make insert statement: %v", err)
 		return nil, fmt.Errorf("could not make insert statement: %v", err)
 	}
 	r.CreatedAt = entity.JSONTime(time.Now())
@@ -141,7 +140,7 @@ func (s storage) GetByID(ctx context.Context, ID string) (*entity.Review, error)
 
 func (s storage) GetList(ctx context.Context, criteria []*pb.Criteria, limit, offset int64) ([]entity.Review, error) {
 	var query = "SELECT `id`,`name`,`email`,`content`,`published`,`category`,`score`,`created_at`,`updated_at` FROM reviews"
-	conditions, replacement := applyCrireria(criteria)
+	conditions, replacement := applyCriteria(criteria)
 	if len(conditions) > 0 {
 		query = fmt.Sprintf(query+" WHERE %s", strings.Join(conditions, " AND "))
 	}
@@ -172,7 +171,7 @@ func (s storage) GetList(ctx context.Context, criteria []*pb.Criteria, limit, of
 func (s storage) Count(ctx context.Context, criteria []*pb.Criteria) (int64, error) {
 	var query = "SELECT COUNT(`id`) as `total` FROM reviews"
 	var total int64
-	conditions, replacement := applyCrireria(criteria)
+	conditions, replacement := applyCriteria(criteria)
 
 	if len(conditions) > 0 {
 		query = fmt.Sprintf(query+" WHERE %s", strings.Join(conditions, " AND "))
@@ -186,7 +185,7 @@ func (s storage) Count(ctx context.Context, criteria []*pb.Criteria) (int64, err
 	return total, nil
 }
 
-func applyCrireria(criteria []*pb.Criteria) ([]string, []interface{}) {
+func applyCriteria(criteria []*pb.Criteria) ([]string, []interface{}) {
 	var conditions []string
 	var replacement []interface{}
 

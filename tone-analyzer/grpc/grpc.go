@@ -47,8 +47,6 @@ func (ctrl reviewService) Update(ctx context.Context, ID string, r entity.Review
 	}
 
 	_, err := ctrl.client.Update(ctx, &in)
-	if err != nil {
-		return err
-	}
-	return nil
+
+	return err
 }

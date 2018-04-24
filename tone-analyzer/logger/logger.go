@@ -1,8 +1,8 @@
 package logger
 
 import (
-	"github.com/Sharykhin/it-customer-review/api/contract"
 	"github.com/Sharykhin/it-customer-review/api/logger/file"
+	"github.com/Sharykhin/it-customer-review/tone-analyzer/contract"
 )
 
 type (

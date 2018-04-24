@@ -3,13 +3,13 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 
 	"context"
 
 	"github.com/Sharykhin/it-customer-review/tone-analyzer/analyzer"
 	"github.com/Sharykhin/it-customer-review/tone-analyzer/entity"
 	"github.com/Sharykhin/it-customer-review/tone-analyzer/grpc"
+	"github.com/Sharykhin/it-customer-review/tone-analyzer/logger"
 )
 
 const (
@@ -36,11 +36,13 @@ func analyze(p []byte) {
 	var am entity.AnalyzeMessage
 	err := json.Unmarshal(p, &am)
 	if err != nil {
-		log.Printf("could not unmarshal analyze message struct: %v", err)
+		logger.Logger.Errorf("could not unmarshal analyze message struct: %v", err)
+		return
 	}
 	s, err := analyzer.Analyzer.Analyze(am.Content)
 	if err != nil {
-		log.Fatal(err)
+		logger.Logger.Errorf("could not get a response from analyzer api: %v", err)
+		return
 	}
 	r := entity.ReviewRequestUpdate{
 		Score: s,
@@ -54,6 +56,6 @@ func analyze(p []byte) {
 
 	err = grpc.ReviewService.Update(context.Background(), am.ID, r)
 	if err != nil {
-		log.Printf("could not update a review: %v", err)
+		logger.Logger.Errorf("could not update a review: %v", err)
 	}
 }

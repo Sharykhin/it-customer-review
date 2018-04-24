@@ -11,4 +11,5 @@ type (
 	}
 )
 
+// Manager is a general queue manager that returns a concrete implementation
 var Manager = manager{MessageProvider: rabbitmq.RabbitMQ}
