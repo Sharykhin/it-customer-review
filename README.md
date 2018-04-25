@@ -6,8 +6,8 @@ Technical description in [google doc](https://docs.google.com/document/d/1RVXLkR
 Requirements:
 -------------
 
-[Docker](https://www.docker.com/)
-[Dep](https://golang.github.io/dep/docs/installation.html)
+[Docker](https://www.docker.com/)  
+[Dep](https://golang.github.io/dep/docs/installation.html) - Golang package manager
 
 Usage:
 ------
