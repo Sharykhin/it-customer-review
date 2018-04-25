@@ -5,8 +5,6 @@ import (
 	"log"
 	"os"
 
-	"time"
-
 	"github.com/Sharykhin/it-customer-review/api/util"
 	"github.com/streadway/amqp"
 )
@@ -86,10 +84,8 @@ func createMessageChannel(msgs <-chan amqp.Delivery) <-chan []byte {
 }
 
 func listenClose(notify chan *amqp.Error, ch *amqp.Channel, conn *amqp.Connection) {
-	for err := range notify {
-		time.Sleep(1 * time.Second)
-		util.Check(ch.Close)
-		util.Check(conn.Close)
-		log.Fatalf("rabbitmq connection was broken: %v", err)
-	}
+	err := <-notify
+	util.Check(ch.Close)
+	util.Check(conn.Close)
+	log.Fatalf("rabbitmq connection was broken: %v", err)
 }
