@@ -72,15 +72,8 @@ func (r rabbitMQ) Publish(body []byte) error {
 }
 
 func listenClose(notify chan *amqp.Error, ch *amqp.Channel, conn *amqp.Connection) {
-	for err := range notify {
-		util.Check(ch.Close)
-		util.Check(conn.Close)
-		log.Fatalf("rabbitmq connection was broken: %v", err)
-	}
-	//select {
-	//case err := <-notify:
-	//	defer util.Check(ch.Close)
-	//	defer util.Check(conn.Close)
-	//	log.Fatalf("rabbitmq connection was broken: %v", err)
-	//}
+	err := <-notify
+	util.Check(ch.Close)
+	util.Check(conn.Close)
+	log.Fatalf("rabbitmq connection was broken: %v", err)
 }
