@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/Sharykhin/it-customer-review/api/entity"
@@ -18,7 +17,9 @@ func Create(w http.ResponseWriter, r *http.Request) {
 
 	sess, err := session.Store.Get(r, "it-customer-review")
 	if err != nil {
-		panic(fmt.Sprintf("could not get cookie from a request: %v", err))
+		logger.Logger.Errorf("could not get cookie from a request: %v", err)
+		util.JSONError(err, w)
+		return
 	}
 
 	decoder := json.NewDecoder(r.Body)
