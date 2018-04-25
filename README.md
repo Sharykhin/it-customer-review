@@ -16,6 +16,11 @@ UI is ready on [http://35.192.27.127/](http://35.192.27.127/) for some testing.
 Local development:
 -----------------
 
+1. Install Golang package manager:
+```bash
+curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+```
+
 1. Run installation
 ```bash
 make install
