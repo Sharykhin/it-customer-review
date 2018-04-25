@@ -1,0 +1,10 @@
+#!/bin/bash
+
+C=0
+for digest in $(gcloud container images list-tags gcr.io/${PROJECT_NAME}/${DOCKER_IMAGE_NAME} --format='get(digest)'); do
+  (
+    gcloud container images delete -q --force-delete-tags "gcr.io/${PROJECT_NAME}/${DOCKER_IMAGE_NAME}@${digest}"
+  )
+  let C=C+1
+done
+echo "Deleted ${C} images in gcr.io/${PROJECT_NAME}/${DOCKER_IMAGE_NAME}." >&2

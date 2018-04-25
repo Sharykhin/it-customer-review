@@ -1,28 +1,96 @@
-version: "3"
+version: "2.1"
 
 services:
-  cr-golang:
+  cr-golang-api:
     container_name: cr-golang-api
     image: cr-golang-api
     build:
       context: .
-      dockerfile: .docker/golang/Dockerfile.dev
+      dockerfile: api/.docker/golang/Dockerfile.dev
     env_file:
-      - ./.docker/golang/.env
+      - api/.docker/golang/.env
+    volumes:
+      - .:/go/src/github.com/Sharykhin/it-customer-review
+    ports:
+      - 8080:8080
+    links:
+      - cr-golang-grpc-server
+      - cr-rabbitmq-tone-analyzer
+    depends_on:
+      cr-golang-grpc-server:
+        condition: service_started
+      cr-rabbitmq-tone-analyzer:
+        condition: service_healthy
+
+  cr-golang-grpc-server:
+    container_name: cr-golang-grpc-server
+    image: cr-golang-grpc-server
+    build:
+      context: .
+      dockerfile: grpc-server/.docker/golang/Dockerfile.dev
+    env_file:
+      - grpc-server/.docker/golang/.env
     volumes:
       - .:/go/src/github.com/Sharykhin/it-customer-review
     links:
-      - cr-mysql
+      - cr-mysql-grpc-server
     depends_on:
-      - cr-mysql
+      - cr-mysql-grpc-server
     ports:
-      - 8080:8080
+      - 50051:50051
 
-  cr-mysql:
-    container_name: cr-mysql-api
-    image: cr-mysql-api
+  cr-mysql-grpc-server:
+    container_name: cr-mysql-grpc-server
+    image: cr-mysql-grpc-server
     build:
       context: .
-      dockerfile: .docker/mysql/Dockerfile
+      dockerfile: grpc-server/.docker/mysql/Dockerfile
     env_file:
-      - ./.docker/mysql/.env
+      - grpc-server/.docker/mysql/.env
+
+  cr-golang-tone-analyzer:
+    container_name: cr-golang-tone-analyzer
+    image: cr-golang-tone-analyzer
+    build:
+      context: .
+      dockerfile: tone-analyzer/.docker/golang/Dockerfile.dev
+    env_file:
+      - tone-analyzer/.docker/golang/.env
+    volumes:
+      - .:/go/src/github.com/Sharykhin/it-customer-review
+    links:
+      - cr-rabbitmq-tone-analyzer
+      - cr-golang-grpc-server
+    depends_on:
+      cr-golang-grpc-server:
+        condition: service_started
+      cr-rabbitmq-tone-analyzer:
+        condition: service_healthy
+
+  cr-rabbitmq-tone-analyzer:
+    container_name: cr-rabbitmq-tone-analyzer
+    image: cr-rabbitmq-tone-analyzer
+    build:
+      context: .
+      dockerfile: tone-analyzer/.docker/rabbitmq/Dockerfile.dev
+    ports:
+      - 5672:5672
+      - 15672:15672
+    env_file:
+      - tone-analyzer/.docker/rabbitmq/.env
+    healthcheck:
+      test:   ["CMD", "curl", "-f", "127.0.0.1:15672"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  cr-ui:
+      container_name: cr-ui
+      image: cr-ui
+      build:
+        context: .
+        dockerfile: ui/.docker/nginx/Dockerfile
+      volumes:
+        - ./ui:/var/www/public
+      ports:
+        - 3000:80

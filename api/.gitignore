@@ -1,0 +1,6 @@
+.idea
+.env
+logs/*
+!logs/.gitkeep
+deployment.yml
+vendor

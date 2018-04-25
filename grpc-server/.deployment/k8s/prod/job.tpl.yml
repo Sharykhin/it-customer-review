@@ -1,0 +1,46 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: grpc-server-migrations
+  namespace: default
+spec:
+  template:
+    spec:
+      containers:
+      - name: grpc-server-migrations-job
+        image: gcr.io/kubernetes-example-199908/grpc-server-golang:${VERSION}
+        command: ['make', 'migrate-up']
+        env:
+        - name: GRPC_ADDRESS
+          value: ":50051"
+        - name: APP_ENV
+          value: "prod"
+        - name: DB_HOST
+          value: "localhost"
+        - name: DB_NAME
+          value: "test"
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: cloudsql-db-credentials
+              key: username
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: cloudsql-db-credentials
+              key: password
+      - name: cloudsql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.11
+        command: ["/cloud_sql_proxy",
+                  "-instances=kubernetes-example-199908:us-central1:sql-example=tcp:3306",
+                  "-credential_file=/secrets/cloudsql/credentials.json"]
+        volumeMounts:
+          - name: cloudsql-instance-credentials
+            mountPath: /secrets/cloudsql
+            readOnly: true
+      volumes:
+      - name: cloudsql-instance-credentials
+        secret:
+          secretName: cloudsql-instance-credentials
+      restartPolicy: Never
+  backoffLimit: 1

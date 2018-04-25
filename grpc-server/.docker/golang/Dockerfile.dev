@@ -1,0 +1,21 @@
+FROM golang:1.9
+
+ADD . /go/src/github.com/Sharykhin/it-customer-review
+
+WORKDIR /go/src/github.com/Sharykhin/it-customer-review/grpc-server
+
+RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+
+RUN dep ensure && \
+    go get github.com/canthefason/go-watcher && \
+    go get github.com/mattes/migrate && \
+    go install github.com/canthefason/go-watcher/cmd/watcher && \
+    go get -u gopkg.in/alecthomas/gometalinter.v2 && \
+    gometalinter.v2 --install && \
+    curl -L "https://github.com/mattes/migrate/releases/download/v3.0.1/migrate.linux-amd64.tar.gz" | tar xvz
+
+RUN mv migrate.linux-amd64 /go/bin/migrate
+
+EXPOSE 50051
+
+ENTRYPOINT watcher

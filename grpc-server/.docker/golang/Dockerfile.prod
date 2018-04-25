@@ -1,0 +1,20 @@
+FROM golang:1.9
+
+ENV APP_ENV prod
+
+ADD . /go/src/github.com/Sharykhin/it-customer-review
+
+WORKDIR /go/src/github.com/Sharykhin/it-customer-review/grpc-server
+
+RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+
+RUN dep ensure && \
+    go get github.com/mattes/migrate && \
+    curl -L "https://github.com/mattes/migrate/releases/download/v3.0.1/migrate.linux-amd64.tar.gz" | tar xvz && \
+    go build -o /go/bin/it-customer-review-grpc-server .
+
+RUN mv migrate.linux-amd64 /go/bin/migrate
+
+EXPOSE 50051
+
+ENTRYPOINT /go/bin/it-customer-review-grpc-server

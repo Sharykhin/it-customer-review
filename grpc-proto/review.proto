@@ -1,0 +1,114 @@
+syntax = "proto3";
+package review;
+
+service Review {
+    // Create a new review
+    rpc Create (ReviewCreateRequest) returns (ReviewResponse) {}
+    // Update an existing review
+    rpc Update(ReviewUpdateRequest) returns(ReviewResponse) {}
+    // Returns a review by ID
+    rpc Get(ReviewID) returns(ReviewResponse) {}
+    // Detect whether server works or not
+    rpc Ping(Empty) returns(Pong) {}
+    // Returns review list based on criteria
+    rpc GetReviewList(ReviewListFilter) returns (stream ReviewResponse) {}
+    // Returns a total number of reviews depending on criteria
+    rpc CountReviews(ReviewCountFilter) returns (CountResponse) {}
+}
+
+// Empty is some sort if missing input parameter
+message Empty {
+
+}
+
+message Criteria {
+    string key = 1;
+    string value = 2;
+}
+
+message ReviewListFilter {
+    repeated Criteria criteria = 1;
+    int64 limit = 2;
+    int64 offset = 3;
+}
+
+message ReviewCountFilter {
+    repeated Criteria criteria = 1;
+}
+// CountResponse returns total number of reviews
+message CountResponse {
+    int64 total = 1;
+}
+
+// Pong simple response
+message Pong {
+    string response = 1;
+}
+
+message ReviewID {
+    string ID = 1;
+}
+
+// ReviewCreateRequest message for creating a new review
+message ReviewCreateRequest {
+    string Name = 1;
+    string Email = 2;
+    string Content = 3;
+    bool Published = 4;
+    oneof Score {
+        bool score_null = 5;
+        int64 score_value = 6;
+    }
+    oneof Category {
+        bool category_null = 7;
+        string category_value = 8;
+    }
+}
+
+message FieldToUpdate {
+    oneof Name {
+        bool name_null = 1;
+        string name_value = 2;
+    }
+    oneof Content {
+        bool content_null = 3;
+        string content_value = 4;
+    }
+    oneof Published {
+        bool published_null = 5;
+        bool published_value = 6;
+    }
+    oneof Score {
+        bool score_null = 7;
+        int64 score_value = 8;
+    }
+    oneof Category {
+        bool category_null = 9;
+        string category_value = 10;
+    }
+}
+
+// ReviewUpdateRequest for updating an existing review
+message ReviewUpdateRequest {
+    string ID = 1;
+    FieldToUpdate fields_to_update = 2;
+}
+
+// Response of a review
+message ReviewResponse {
+    string ID = 1;
+    string Name = 2;
+    string Email = 3;
+    string Content = 4;
+    bool Published = 5;
+    oneof Score {
+        bool score_null = 6;
+        int64 score_value = 7;
+    }
+    oneof Category {
+        bool category_null = 8;
+        string category_value = 9;
+    }
+    string CreatedAt = 10;
+    string UpdatedAt = 11;
+}
