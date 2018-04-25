@@ -1,4 +1,4 @@
-version: "3"
+version: "2.1"
 
 services:
   cr-golang-api:
@@ -13,6 +13,14 @@ services:
       - .:/go/src/github.com/Sharykhin/it-customer-review
     ports:
       - 8080:8080
+    links:
+      - cr-golang-grpc-server
+      - cr-rabbitmq-tone-analyzer
+    depends_on:
+      cr-golang-grpc-server:
+        condition: service_started
+      cr-rabbitmq-tone-analyzer:
+        condition: service_healthy
 
   cr-golang-grpc-server:
     container_name: cr-golang-grpc-server
@@ -52,8 +60,12 @@ services:
       - .:/go/src/github.com/Sharykhin/it-customer-review
     links:
       - cr-rabbitmq-tone-analyzer
+      - cr-golang-grpc-server
     depends_on:
-      - cr-rabbitmq-tone-analyzer
+      cr-golang-grpc-server:
+        condition: service_started
+      cr-rabbitmq-tone-analyzer:
+        condition: service_healthy
 
   cr-rabbitmq-tone-analyzer:
     container_name: cr-rabbitmq-tone-analyzer
@@ -66,6 +78,11 @@ services:
       - 15672:15672
     env_file:
       - tone-analyzer/.docker/rabbitmq/.env
+    healthcheck:
+      test:   ["CMD", "curl", "-f", "127.0.0.1:15672"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
 
   cr-ui:
       container_name: cr-ui

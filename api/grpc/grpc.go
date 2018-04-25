@@ -137,6 +137,9 @@ func (ctrl reviewService) Index(ctx context.Context, criteria []entity.Criteria,
 				return nil, 0, listRes.err
 			}
 			rl = listRes.list
+			if rl == nil {
+				rl = make([]entity.Review, 0)
+			}
 		case countRes, ok := <-chCount:
 			if !ok {
 				chCount = nil

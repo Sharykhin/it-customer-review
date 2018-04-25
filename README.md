@@ -31,6 +31,11 @@ docker-compose up -d
 docker-compose ps
 ```
 
+4. Run migrations:
+```bash
+docker-compose exec cr-golang-grpc-server make migrate-up
+```
+
 Go to [http://localhost:3000](http://localhost:3000) to see how everything works.
 
 
