@@ -7,6 +7,7 @@ Requirements:
 -------------
 
 [Docker](https://www.docker.com/)
+[Dep](https://golang.github.io/dep/docs/installation.html)
 
 Usage:
 ------

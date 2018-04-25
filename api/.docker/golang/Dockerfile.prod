@@ -6,9 +6,9 @@ ADD . /go/src/github.com/Sharykhin/it-customer-review
 
 WORKDIR /go/src/github.com/Sharykhin/it-customer-review/api
 
-RUN go get . && \
-    go get github.com/gorilla/sessions && \
-    go get github.com/stretchr/testify/mock && \
+RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+
+RUN dep ensure && \
     go build -o /go/bin/it-customer-review-api .
 
 EXPOSE 8080
